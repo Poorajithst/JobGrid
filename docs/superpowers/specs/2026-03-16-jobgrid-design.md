@@ -33,7 +33,7 @@ Personal job-discovery platform that pulls PM listings from multiple sources nig
 | Scheduler | node-cron (2am nightly) |
 | Frontend | React 19 + Vite + TypeScript |
 | UI Components | shadcn/ui + Tailwind CSS v4 |
-| HTTP Client | Axios |
+| HTTP Client (frontend) | Axios |
 | Validation | Zod (shared schemas) |
 
 ## Project Structure
@@ -183,7 +183,7 @@ Nightly run logs for debugging and status display.
 | jobs_found | integer, default 0 | |
 | jobs_new | integer, default 0 | |
 | sources_run | text, nullable | JSON array of sources that ran |
-| status | text, not null | success, partial, failed |
+| status | text, not null | running, success, partial, failed |
 | error | text, nullable | Error message if failed |
 
 ## Sources Layer
@@ -198,9 +198,11 @@ Runs all 5 sources in sequence: API sources first (fast, zero risk), then Playwr
 3. Google Jobs scraper
 4. ZipRecruiter scraper
 
+**Applicant filtering:** After collecting results, jobs with `applicants > MAX_APPLICANTS` are dropped. If `applicants` is null (common for Greenhouse/Lever APIs which don't expose counts, and some scraped listings), the job passes the filter — only skip when we have a count and it exceeds the threshold.
+
 **Deduplication:**
 1. Deduplicate within batch by `link` (exact URL match)
-2. For ATS sources, also deduplicate by `(source, ats_id)` to catch URL variations
+2. For ATS sources (Greenhouse and Lever only), also deduplicate by `(source, ats_id)` to catch URL variations. Scraped sources (Indeed, Google Jobs, ZipRecruiter) do not populate `ats_id` — they rely solely on `link` for dedup.
 3. Query existing `jobs` table for matching `link` values
 4. Insert only truly new jobs, return them for scoring
 
@@ -235,21 +237,35 @@ Playwright scraper. Navigates to Indeed with query params:
 - `fromage=1` (last 24h)
 - `sort=date`
 
-Waits for `.job_seen_beacon`, extracts title/company/location/link/posted_at from cards.
+Waits for `.job_seen_beacon`, extracts title/company/location/link/posted_at from cards. Scrapes first page only (with `fromage=1` and 25mi radius, first page is sufficient for daily runs). All scraper selectors (Indeed, Google Jobs, ZipRecruiter) are fragile by nature — if a scraper returns 0 results, log a warning indicating possible selector breakage.
 
 ### Google Jobs (sources/google-jobs.ts)
 
-Playwright scraper. Runs multiple search queries:
+Playwright scraper. Runs multiple search queries defined in a `SEARCH_QUERIES` constant (not driven by env vars — Google Jobs queries need manual tuning unlike Indeed's structured params):
 - "project manager" Worcester MA
 - "program manager" Worcester MA
 - "technical program manager" Boston MA
 - "infrastructure PM" remote
 
-Navigates to `google.com/search?q={query}&ibp=htl;jobs`. Extracts from job carousel cards.
+Navigates to `google.com/search?q={query}&ibp=htl;jobs`. Waits for the jobs carousel to render (`.PwjeAc` cards). Extracts from each card:
+- Title: `.BjJfJf` innerText
+- Company: `.vNEEBe` innerText
+- Location: `.Qk80Jf` innerText
+- Link: first `a[href]` in the card
+- Maps to common job shape with `source: 'google-jobs'`, `ats_id: null`
+
+Note: Google Jobs selectors are fragile and may change. If selectors break, the scraper will return 0 results and log a warning — it won't crash the run.
+
+Note: `SCRAPE_RADIUS` and `DAYS_POSTED` env vars apply to Indeed and ZipRecruiter (which accept structured query params). Google Jobs queries are static strings because Google's jobs carousel does not support radius/date params in the URL — filtering happens visually in the carousel UI.
 
 ### ZipRecruiter (sources/ziprecruiter.ts)
 
-Playwright scraper. Similar pattern to Indeed — navigates to ZipRecruiter search with location/radius/date filters, extracts job cards.
+Playwright scraper. Navigates to ZipRecruiter with query params:
+- Search URL: `https://www.ziprecruiter.com/jobs-search?search=project+manager&location=Worcester%2C+MA&radius=25&days=1`
+- Waits for `.job_listing` cards
+- Extracts from each card: title (`.job_title`), company (`.company_name`), location (`.location`), link (`a.job_link[href]`), posted_at (`.posted_date`)
+- Maps to common job shape with `source: 'ziprecruiter'`
+- Applies same delay patterns as other scrapers (2-5s between actions)
 
 ### Browser Infrastructure (browser/)
 
@@ -260,11 +276,22 @@ Playwright scraper. Similar pattern to Indeed — navigates to ZipRecruiter sear
 
 Typed array of target companies, seeded with initial list. Managed at runtime via `/api/companies` endpoints.
 
-Initial seed companies:
+Initial seed companies (verified slugs):
 - MathWorks (greenhouse: mathworks)
 - Infosys BPM (greenhouse: infosysbpm)
 - Abiomed (greenhouse: abiomed)
-- Plus 7-12 more discovered via `site:boards.greenhouse.io` and `site:jobs.lever.co` searches for Worcester/Boston area companies.
+- HubSpot (greenhouse: hubspot)
+- Wayfair (greenhouse: wayfair)
+- Toast (greenhouse: toast)
+- Klaviyo (greenhouse: klaviyo)
+- Rapid7 (greenhouse: rapid7)
+- Moderna (greenhouse: moderna)
+- Vanderhoof & Assoc (lever: vanderhoof)
+- Datto (greenhouse: datto)
+- Allegro MicroSystems (greenhouse: allegromicrosystems)
+- Insulet Corporation (greenhouse: insulet)
+
+Additional companies can be added at runtime via POST /api/companies.
 
 ## Groq Scoring Layer
 
@@ -292,7 +319,7 @@ Instructs LLaMA 3.3 to analyze job against profile. Returns JSON:
 }
 ```
 
-Temperature 0.2 for consistency. `response_format: { type: "json_object" }` enforced. Zod validates the response shape.
+Temperature 0.2 for consistency. Groq SDK supports `response_format: { type: "json_object" }` for LLaMA 3.3 models. Zod validates the response shape as a safety net. If Groq changes support, fallback is prompt-based JSON enforcement + JSON.parse with error retry.
 
 ### Outreach Prompt (scorer/prompts.ts)
 
@@ -302,7 +329,7 @@ On-demand prompt for generating full outreach drafts. Takes job + type (connecti
 
 - Batches of 10 jobs
 - Each batch scored in parallel via `Promise.all`
-- 1-second pause between batches (Groq rate limits)
+- 1-second pause between batches (Groq rate limits). On 429 responses, retry with exponential backoff (2s, 4s, 8s, max 3 retries per job).
 - Failed individual scores logged and skipped (don't block batch)
 - Updates `jobs` table with fit_score, competition, recommendation, pitch, score_reason
 
@@ -314,13 +341,14 @@ Express.js on port 3001. All routes prefixed `/api`. CORS enabled for Vite dev s
 
 | Method | Route | Description |
 |---|---|---|
-| GET | /api/jobs | List jobs. Query: `?source=greenhouse&status=discovered&competition=low&minScore=70&sort=fit_score&order=desc&page=1&limit=20` |
+| GET | /api/jobs | List jobs. Query: `?source=greenhouse&status=discovered&competition=low&minScore=70&search=manager&sort=fit_score&order=desc&page=1&limit=20`. Response: `{ jobs: Job[], total: number, page: number, totalPages: number, hasMore: boolean }` |
 | GET | /api/jobs/:id | Single job with full detail + outreach drafts |
 | PATCH | /api/jobs/:id/status | Update pipeline status. Body: `{ status, applied_at?, interview_at?, offer_at? }`. Auto-sets timestamps. |
 | PATCH | /api/jobs/:id/notes | Update notes/next_action. Body: `{ notes?, next_action? }` |
 | POST | /api/outreach/:id | Generate outreach via Groq. Body: `{ type: "connection" | "email" | "inmail" }`. Saves to outreach table. |
 | GET | /api/stats | Dashboard aggregates: total, avg fit, low-competition count, by-source, by-status, last scraped, new today |
-| POST | /api/scrape | Trigger full source run async. Returns `{ runId }`. |
+| POST | /api/scrape | Trigger full source run async. Runs as a detached Promise in-process. A concurrency guard (simple boolean flag) prevents overlapping runs — returns `409 Conflict` if a run is already in progress. Returns `{ runId }`. |
+| GET | /api/scrape/:runId | Get status of a specific scrape run. Frontend polls this every 3 seconds after triggering a manual run, stops when status is no longer `running`. |
 | GET | /api/scrape/log | Last 10 scrape runs |
 | GET | /api/companies | List target companies |
 | POST | /api/companies | Add company. Body: `{ name, greenhouse_slug?, lever_slug? }` |
@@ -355,7 +383,7 @@ Express.js on port 3001. All routes prefixed `/api`. CORS enabled for Vite dev s
 
 ### Validation
 
-Zod schemas on all mutation endpoints. Shared between frontend and backend — frontend imports them for type-safe API contracts.
+Zod schemas on all mutation endpoints. Schemas are defined in the backend package (`src/api/schemas.ts`) and imported by the frontend via pnpm workspace dependency (`@jobgrid/backend/schemas`). This avoids a separate shared package while keeping types in sync.
 
 ### Error Handling
 
@@ -366,7 +394,7 @@ Centralized error middleware returns consistent `{ error: string, details?: any 
 node-cron at `0 2 * * *` (2am daily). Runs in the same process as Express.
 
 **Sequence:**
-1. Create `scrape_runs` entry (started_at, status pending)
+1. Create `scrape_runs` entry (started_at, status running)
 2. API sources in parallel: `fetchGreenhouse()` + `fetchLever()`
 3. Launch Playwright browser
 4. Run scrapers sequentially: Indeed → Google Jobs → ZipRecruiter
@@ -398,7 +426,7 @@ Dark analytics aesthetic (Linear/Vercel-inspired):
 | JobList.tsx | Filter pills (source/pipeline/competition), search input, scrollable job card list |
 | JobCard.tsx | Title, company, location, score circle, competition/recommendation/source tags, posted time, applicant count |
 | DetailPanel.tsx | Job header, 4 metric cards, score reason, outreach pitch, description preview with expand, pipeline bar, action buttons, notes |
-| Pipeline.tsx | Clickable segmented bar: Discovered → Applied → Interview → Offer |
+| Pipeline.tsx | Clickable segmented bar: Discovered → Applied → Interview → Offer. Separate "Reject" button below the bar (rejection can happen from any stage, not just linearly). Sets status to `rejected` and records which stage the rejection came from in `notes`. |
 | OutreachModal.tsx | Draft display with copy-to-clipboard, outreach history |
 | StatusBar.tsx | (Integrated into TopBar) Last scraped, source counts, manual trigger |
 
@@ -439,6 +467,9 @@ PORT=3001
 SCRAPE_RADIUS=25
 MAX_APPLICANTS=30
 DAYS_POSTED=1
+# SCRAPE_RADIUS: radius in miles for Indeed and ZipRecruiter location search
+# MAX_APPLICANTS: skip jobs with more than this many applicants (applied as filter during source processing)
+# DAYS_POSTED: max posting age in days for Indeed (fromage) and ZipRecruiter (days param). Google Jobs uses static queries without date filtering.
 NODE_ENV=development
 ```
 
