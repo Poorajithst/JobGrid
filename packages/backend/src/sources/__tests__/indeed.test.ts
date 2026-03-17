@@ -1,6 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { scrapeIndeed } from '../indeed.js';
 
+vi.mock('../../browser/delay.js', () => ({
+  randomDelay: vi.fn().mockResolvedValue(undefined),
+}));
+
 describe('scrapeIndeed', () => {
   it('extracts job data from page elements', async () => {
     const mockPage = {
