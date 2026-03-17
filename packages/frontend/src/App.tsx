@@ -105,7 +105,8 @@ export default function App() {
     }
   }, [activeUser, newName]);
 
-  const filtersWithProfile = { ...filters, profileId: activeProfileId ?? undefined };
+  const [scoreTier, setScoreTier] = useState<'analytic' | 'ai' | undefined>(undefined);
+  const filtersWithProfile = { ...filters, profileId: activeProfileId ?? undefined, scoreTier };
   const { jobs, loading, refetch: refetchJobs } = useJobs(filtersWithProfile);
   const { stats, refetch: refetchStats } = useStats(activeProfileId);
   const { job: selectedJob, refetch: refetchJob, updateStatus, updateNotes } = useJob(selectedId);
@@ -147,6 +148,8 @@ export default function App() {
         onScrapeComplete={handleRefresh}
         activeProfileId={activeProfileId}
         onProfileChange={setActiveProfileId}
+        scoreTier={scoreTier}
+        onScoreTierChange={setScoreTier}
         userSwitcher={
           <UserSwitcher
             activeUser={activeUser}
@@ -272,7 +275,8 @@ export default function App() {
                 {users.map((u) => (
                   <div
                     key={u.id}
-                    className={`flex items-center gap-3 py-2 px-3 rounded-lg ${u.id === activeUser?.id ? 'bg-accent-indigo/[0.08]' : ''}`}
+                    onClick={() => handleSwitchUser(u)}
+                    className={`flex items-center gap-3 py-2 px-3 rounded-lg cursor-pointer hover:bg-accent-indigo/[0.06] transition-colors ${u.id === activeUser?.id ? 'bg-accent-indigo/[0.08]' : ''}`}
                   >
                     <div
                       className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-white shrink-0"

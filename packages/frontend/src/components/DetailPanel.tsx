@@ -86,13 +86,21 @@ export function DetailPanel({ job, onStatusChange, onNotesChange, activeProfileI
 
   // Build keyword sets for highlighting
   const skillWords = useMemo(() => {
-    if (!activeProfile?.target_skills) return [] as string[];
-    return activeProfile.target_skills.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+    if (!activeProfile?.targetSkills) return [] as string[];
+    try {
+      const arr = JSON.parse(activeProfile.targetSkills);
+      if (Array.isArray(arr)) return arr.map((s: string) => s.toLowerCase());
+    } catch { /* not JSON */ }
+    return activeProfile.targetSkills.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
   }, [activeProfile]);
 
   const certWords = useMemo(() => {
-    if (!activeProfile?.target_certs) return [] as string[];
-    return activeProfile.target_certs.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+    if (!activeProfile?.targetCerts) return [] as string[];
+    try {
+      const arr = JSON.parse(activeProfile.targetCerts);
+      if (Array.isArray(arr)) return arr.map((s: string) => s.toLowerCase());
+    } catch { /* not JSON */ }
+    return activeProfile.targetCerts.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
   }, [activeProfile]);
 
   // Highlight matching keywords in description text

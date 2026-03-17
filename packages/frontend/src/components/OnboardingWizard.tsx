@@ -146,19 +146,10 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
 
       await profilesApi.create({
         name: `${state.name}'s Profile`,
-        target_titles: state.titles.join(', '),
-        target_skills: enabledSkills.join(', '),
-        target_certs: state.certs.join(', '),
-        target_locations: allLocations.join(', '),
-        weight_title: 0.20,
-        weight_skill: 0.25,
-        weight_location: 0.10,
-        weight_experience: 0.15,
-        weight_education: 0.10,
-        weight_cert: 0.10,
-        weight_freshness: 0.10,
-        ai_threshold: 60,
-        is_active: true,
+        targetTitles: state.titles,
+        targetSkills: enabledSkills,
+        targetCerts: state.certs.length > 0 ? state.certs : undefined,
+        targetLocations: allLocations.length > 0 ? allLocations : undefined,
       });
 
       onComplete({ id: user.id, name: user.name, avatarColor: user.avatarColor || state.avatarColor });

@@ -1,29 +1,29 @@
 import { useState, useCallback, useEffect } from 'react';
 import { profilesApi } from '../api/client';
-import type { Profile } from '../api/types';
+import type { Profile, ProfileCreate, ProfileUpdate } from '../api/types';
 
 interface ProfileManagerProps {
   onProfileActivated?: (profileId: number) => void;
 }
 
 const WEIGHT_KEYS = [
-  { key: 'weight_title', label: 'Title' },
-  { key: 'weight_skill', label: 'Skills' },
-  { key: 'weight_location', label: 'Location' },
-  { key: 'weight_experience', label: 'Experience' },
-  { key: 'weight_education', label: 'Education' },
-  { key: 'weight_cert', label: 'Certifications' },
-  { key: 'weight_freshness', label: 'Freshness' },
+  { key: 'titleWeight', label: 'Title' },
+  { key: 'skillWeight', label: 'Skills' },
+  { key: 'locationWeight', label: 'Location' },
+  { key: 'experienceWeight', label: 'Experience' },
+  { key: 'certWeight', label: 'Certifications' },
+  { key: 'freshnessWeight', label: 'Freshness' },
+  { key: 'competitionWeight', label: 'Competition' },
 ] as const;
 
 const DEFAULT_WEIGHTS: Record<string, number> = {
-  weight_title: 0.20,
-  weight_skill: 0.25,
-  weight_location: 0.10,
-  weight_experience: 0.15,
-  weight_education: 0.10,
-  weight_cert: 0.10,
-  weight_freshness: 0.10,
+  titleWeight: 0.15,
+  skillWeight: 0.25,
+  locationWeight: 0.10,
+  experienceWeight: 0.05,
+  certWeight: 0.10,
+  freshnessWeight: 0.25,
+  competitionWeight: 0.10,
 };
 
 export function ProfileManager({ onProfileActivated }: ProfileManagerProps) {
@@ -48,12 +48,11 @@ export function ProfileManager({ onProfileActivated }: ProfileManagerProps) {
   const startCreate = () => {
     setEditing({
       name: '',
-      target_titles: '',
-      target_skills: '',
-      target_certs: '',
-      target_locations: '',
-      ai_threshold: 60,
-      is_active: true,
+      targetTitles: '',
+      targetSkills: '',
+      targetCerts: '',
+      targetLocations: '',
+      isActive: true,
       ...DEFAULT_WEIGHTS,
     });
   };
@@ -64,10 +63,30 @@ export function ProfileManager({ onProfileActivated }: ProfileManagerProps) {
     setError(null);
     try {
       if (editing.id) {
-        const { id, ...data } = editing;
-        await profilesApi.update(id, data);
+        // Update existing profile
+        const updates: ProfileUpdate = {};
+        if (editing.name) updates.name = editing.name;
+        if (editing.targetTitles) updates.targetTitles = parseCommaSeparated(editing.targetTitles);
+        if (editing.targetSkills) updates.targetSkills = parseCommaSeparated(editing.targetSkills);
+        if (editing.targetCerts !== undefined) updates.targetCerts = parseCommaSeparated(editing.targetCerts || '');
+        if (editing.targetLocations !== undefined) updates.targetLocations = parseCommaSeparated(editing.targetLocations || '');
+        // Include weights
+        for (const { key } of WEIGHT_KEYS) {
+          const val = (editing as Record<string, number>)[key];
+          if (val !== undefined) (updates as Record<string, number>)[key] = val;
+        }
+        if (editing.isActive !== undefined) updates.isActive = editing.isActive;
+        await profilesApi.update(editing.id, updates);
       } else {
-        await profilesApi.create(editing as Profile);
+        // Create new profile
+        const createData: ProfileCreate = {
+          name: editing.name,
+          targetTitles: parseCommaSeparated(editing.targetTitles || ''),
+          targetSkills: parseCommaSeparated(editing.targetSkills || ''),
+          targetCerts: parseCommaSeparated(editing.targetCerts || ''),
+          targetLocations: parseCommaSeparated(editing.targetLocations || ''),
+        };
+        await profilesApi.create(createData);
       }
       await fetchProfiles();
       setEditing(null);
@@ -89,9 +108,9 @@ export function ProfileManager({ onProfileActivated }: ProfileManagerProps) {
 
   const handleToggleActive = async (profile: Profile) => {
     try {
-      const updated = await profilesApi.update(profile.id, { is_active: !profile.is_active });
+      const updated = await profilesApi.update(profile.id, { isActive: !profile.isActive });
       await fetchProfiles();
-      if (updated.is_active && onProfileActivated) onProfileActivated(updated.id);
+      if (updated.isActive && onProfileActivated) onProfileActivated(updated.id);
     } catch {
       setError('Failed to toggle profile.');
     }
@@ -124,6 +143,26 @@ export function ProfileManager({ onProfileActivated }: ProfileManagerProps) {
       for (const k of otherKeys) result[k] = Number(share.toFixed(4));
     }
     return result;
+  };
+
+  /** Parse a JSON-stringified array or comma-separated string into display text */
+  const displayList = (val: string | null | undefined): string => {
+    if (!val) return '';
+    try {
+      const arr = JSON.parse(val);
+      if (Array.isArray(arr)) return arr.join(', ');
+    } catch { /* not JSON */ }
+    return val;
+  };
+
+  /** Count items in a JSON array string or comma-separated string */
+  const countItems = (val: string | null | undefined): number => {
+    if (!val) return 0;
+    try {
+      const arr = JSON.parse(val);
+      if (Array.isArray(arr)) return arr.length;
+    } catch { /* not JSON */ }
+    return val.split(',').map(s => s.trim()).filter(Boolean).length;
   };
 
   return (
@@ -160,18 +199,18 @@ export function ProfileManager({ onProfileActivated }: ProfileManagerProps) {
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => handleToggleActive(p)}
-                  className={`w-9 h-5 rounded-full relative transition-colors ${p.is_active ? 'bg-accent-green/40' : 'bg-bg-card/60'}`}
+                  className={`w-9 h-5 rounded-full relative transition-colors ${p.isActive ? 'bg-accent-green/40' : 'bg-bg-card/60'}`}
                 >
                   <div
                     className={`absolute top-0.5 w-4 h-4 rounded-full transition-all ${
-                      p.is_active ? 'left-[18px] bg-accent-green-light shadow-[0_0_6px_rgba(16,185,129,0.5)]' : 'left-0.5 bg-text-dim'
+                      p.isActive ? 'left-[18px] bg-accent-green-light shadow-[0_0_6px_rgba(16,185,129,0.5)]' : 'left-0.5 bg-text-dim'
                     }`}
                   />
                 </button>
                 <div>
                   <div className="text-sm font-semibold text-text-primary">{p.name}</div>
                   <div className="text-[10px] text-text-dim mt-0.5">
-                    AI threshold: {p.ai_threshold} | Titles: {p.target_titles ? p.target_titles.split(',').length : 0}
+                    Titles: {countItems(p.targetTitles)} | Skills: {countItems(p.targetSkills)}
                   </div>
                 </div>
               </div>
@@ -184,7 +223,13 @@ export function ProfileManager({ onProfileActivated }: ProfileManagerProps) {
                   Auto-populate
                 </button>
                 <button
-                  onClick={() => setEditing({ ...p })}
+                  onClick={() => setEditing({
+                    ...p,
+                    targetTitles: displayList(p.targetTitles),
+                    targetSkills: displayList(p.targetSkills),
+                    targetCerts: displayList(p.targetCerts),
+                    targetLocations: displayList(p.targetLocations),
+                  })}
                   className="px-3 py-1.5 rounded-lg text-[10px] font-semibold bg-bg-card/50 text-text-secondary border border-border-subtle hover:text-text-primary hover:border-border transition-all"
                 >
                   Edit
@@ -226,41 +271,28 @@ export function ProfileManager({ onProfileActivated }: ProfileManagerProps) {
           {/* Tag inputs */}
           <TagInput
             label="Target Titles"
-            value={editing.target_titles ?? ''}
-            onChange={(v) => setEditing({ ...editing, target_titles: v })}
+            value={editing.targetTitles ?? ''}
+            onChange={(v) => setEditing({ ...editing, targetTitles: v })}
             placeholder="Type a title and press Enter"
           />
           <TagInput
             label="Target Skills"
-            value={editing.target_skills ?? ''}
-            onChange={(v) => setEditing({ ...editing, target_skills: v })}
+            value={editing.targetSkills ?? ''}
+            onChange={(v) => setEditing({ ...editing, targetSkills: v })}
             placeholder="Type a skill and press Enter"
           />
           <TagInput
             label="Target Certifications"
-            value={editing.target_certs ?? ''}
-            onChange={(v) => setEditing({ ...editing, target_certs: v })}
+            value={editing.targetCerts ?? ''}
+            onChange={(v) => setEditing({ ...editing, targetCerts: v })}
             placeholder="Type a cert and press Enter"
           />
           <TagInput
             label="Target Locations"
-            value={editing.target_locations ?? ''}
-            onChange={(v) => setEditing({ ...editing, target_locations: v })}
+            value={editing.targetLocations ?? ''}
+            onChange={(v) => setEditing({ ...editing, targetLocations: v })}
             placeholder="Type a location and press Enter"
           />
-
-          {/* AI Threshold */}
-          <label className="block mb-4">
-            <span className="text-[11px] text-text-secondary font-medium">AI Threshold</span>
-            <input
-              type="number"
-              min={0}
-              max={100}
-              value={editing.ai_threshold ?? 60}
-              onChange={(e) => setEditing({ ...editing, ai_threshold: Number(e.target.value) })}
-              className="mt-1 w-20 bg-bg-primary/40 border border-border-subtle rounded-lg p-2.5 text-xs text-text-primary outline-none focus:border-accent-indigo/40"
-            />
-          </label>
 
           {/* Weight sliders */}
           <div className="mb-4">
@@ -318,6 +350,12 @@ export function ProfileManager({ onProfileActivated }: ProfileManagerProps) {
       )}
     </div>
   );
+}
+
+/* ── Helpers ── */
+
+function parseCommaSeparated(val: string): string[] {
+  return val.split(',').map((s) => s.trim()).filter(Boolean);
 }
 
 /* ── Tag Input ── */

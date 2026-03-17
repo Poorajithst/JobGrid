@@ -21,6 +21,7 @@ export function createJobsRouter(queries: ReturnType<typeof createQueries>) {
     };
 
     const profileId = req.query.profileId ? parseInt(req.query.profileId as string, 10) : undefined;
+    const scoreTier = req.query.scoreTier as string | undefined; // 'analytic' | 'ai'
 
     // Get all matching jobs for count, then apply pagination
     const allJobs = queries.getJobs(filters);
@@ -34,14 +35,30 @@ export function createJobsRouter(queries: ReturnType<typeof createQueries>) {
         ipeScore: score?.ipeScore ?? null,
         matchedSkills: score?.matchedSkills ? JSON.parse(score.matchedSkills) : null,
         aiValidated: score?.aiValidated ?? null,
+        aiAgrees: score?.aiAgrees ?? null,
         aiPitch: score?.aiPitch ?? null,
-        aiFlags: score?.aiFlags ? JSON.parse(score.aiFlags) : null,
+        aiFlags: score?.aiFlags ? (() => { try { return JSON.parse(score.aiFlags!); } catch { return [score.aiFlags]; } })() : null,
       };
     });
 
     if (profileId && filters.orderBy === 'scrapedAt' && filters.orderDir === 'desc') {
       // Default sort when profileId is set: ipeScore desc
       enrichedJobs.sort((a: any, b: any) => ((b.ipeScore ?? -1) - (a.ipeScore ?? -1)));
+    }
+
+    // Apply score tier filtering
+    if (profileId && scoreTier) {
+      const profile = queries.getProfileById(profileId);
+      if (scoreTier === 'analytic') {
+        // Show only top N by IPE score (analyticTopN from profile, default 35)
+        const topN = profile?.analyticTopN ?? 35;
+        // Sort by ipeScore desc first, then take top N
+        enrichedJobs.sort((a: any, b: any) => ((b.ipeScore ?? -1) - (a.ipeScore ?? -1)));
+        enrichedJobs = enrichedJobs.filter((j: any) => j.ipeScore != null).slice(0, topN);
+      } else if (scoreTier === 'ai') {
+        // Show only AI-validated jobs (the top picks sent through AI review)
+        enrichedJobs = enrichedJobs.filter((j: any) => j.aiValidated === true);
+      }
     }
 
     const total = enrichedJobs.length;

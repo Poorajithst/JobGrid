@@ -16,7 +16,6 @@ const SOURCE_VALUES: Record<string, string | undefined> = {
 };
 const STATUSES = ['All', 'Discovered', 'Applied', 'Interview', 'Offer', 'Rejected'];
 const COMPETITIONS = ['All', 'Low', 'Medium', 'High'];
-
 export function JobList({ jobs, selectedId, onSelect, filters, onFiltersChange }: JobListProps) {
   const activeSource = SOURCES.find(s => SOURCE_VALUES[s] === filters.source) || 'All';
   const activeStatus = filters.status ? filters.status.charAt(0).toUpperCase() + filters.status.slice(1) : 'All';

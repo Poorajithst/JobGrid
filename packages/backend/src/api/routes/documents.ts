@@ -44,7 +44,7 @@ export function createDocumentsRouter(queries: ReturnType<typeof createQueries>)
       queries.deleteDocumentByTypeAndUser(type, req.userId);
 
       // Insert new document
-      const doc = queries.insertDocument({
+      queries.insertDocument({
         type,
         filename: file.originalname,
         rawText,
@@ -59,21 +59,11 @@ export function createDocumentsRouter(queries: ReturnType<typeof createQueries>)
         userId: req.userId,
       });
 
-      res.json({
-        message: 'Document uploaded and parsed',
-        document: {
-          type,
-          filename: file.originalname,
-          skills: profile.skills,
-          titles: profile.titles,
-          certs: profile.certs,
-          experienceYears: profile.experienceYears,
-          locations: profile.locations,
-          industries: profile.industries,
-          tools: profile.tools,
-          education: profile.education,
-        },
-      });
+      // Return the inserted document (matches GET /documents shape)
+      const docs = queries.getDocumentsByTypeAndUser(type, req.userId);
+      const inserted = docs[0];
+
+      res.json(inserted);
     } catch (err) {
       next(err);
     }

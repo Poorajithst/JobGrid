@@ -86,6 +86,7 @@ export interface JobFilters {
   page?: number;
   limit?: number;
   profileId?: number;
+  scoreTier?: 'all' | 'analytic' | 'ai';
 }
 
 /* ── IPE: Documents ── */
@@ -109,23 +110,43 @@ export interface Document {
 export interface Profile {
   id: number;
   name: string;
-  target_titles: string;
-  target_skills: string;
-  target_certs: string;
-  target_locations: string;
-  weight_title: number;
-  weight_skill: number;
-  weight_location: number;
-  weight_experience: number;
-  weight_education: number;
-  weight_cert: number;
-  weight_freshness: number;
-  ai_threshold: number;
-  is_active: boolean;
+  targetTitles: string;
+  targetSkills: string;
+  targetCerts: string | null;
+  targetLocations: string | null;
+  searchQueries: string | null;
+  titleSynonyms: string | null;
+  freshnessWeight: number;
+  skillWeight: number;
+  titleWeight: number;
+  certWeight: number;
+  competitionWeight: number;
+  locationWeight: number;
+  experienceWeight: number;
+  isActive: boolean;
+  userId: number;
 }
 
-export type ProfileCreate = Omit<Profile, 'id'>;
-export type ProfileUpdate = Partial<ProfileCreate>;
+export interface ProfileCreate {
+  name: string;
+  targetTitles: string[];
+  targetSkills: string[];
+  targetCerts?: string[];
+  targetLocations?: string[];
+  searchQueries?: string[];
+  titleSynonyms?: Record<string, string[]>;
+}
+
+export type ProfileUpdate = Partial<ProfileCreate> & {
+  freshnessWeight?: number;
+  skillWeight?: number;
+  titleWeight?: number;
+  certWeight?: number;
+  competitionWeight?: number;
+  locationWeight?: number;
+  experienceWeight?: number;
+  isActive?: boolean;
+};
 
 /* ── IPE: Job Scores ── */
 

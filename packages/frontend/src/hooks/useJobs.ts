@@ -29,7 +29,7 @@ export function useJobs(filters: JobFilters = {}) {
     filters.source, filters.status, filters.competition,
     filters.minScore, filters.search, filters.sort,
     filters.order, filters.page, filters.limit,
-    filters.profileId, fetchJobs,
+    filters.profileId, filters.scoreTier, fetchJobs,
   ]);
 
   const refetch = useCallback(() => fetchJobs(filters), [fetchJobs, filters]);

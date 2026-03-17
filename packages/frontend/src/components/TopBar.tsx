@@ -8,9 +8,11 @@ interface TopBarProps {
   activeProfileId: number | null;
   onProfileChange: (id: number | null) => void;
   userSwitcher?: React.ReactNode;
+  scoreTier?: 'analytic' | 'ai';
+  onScoreTierChange?: (tier: 'analytic' | 'ai' | undefined) => void;
 }
 
-export function TopBar({ stats, onScrapeComplete, activeProfileId, onProfileChange, userSwitcher }: TopBarProps) {
+export function TopBar({ stats, onScrapeComplete, activeProfileId, onProfileChange, userSwitcher, scoreTier, onScoreTierChange }: TopBarProps) {
   const [scraping, setScraping] = useState(false);
   const [profiles, setProfiles] = useState<Profile[]>([]);
 
@@ -209,24 +211,46 @@ export function TopBar({ stats, onScrapeComplete, activeProfileId, onProfileChan
           {enrichLabel}
         </button>
 
-        {/* 3. Analytic Score button */}
+        {/* 3. Analytic Score button — click to score, click again to filter */}
         {activeProfileId && (
           <button
-            onClick={handleScore}
+            onClick={() => {
+              if (hasScored && !scoring) {
+                // Toggle filter
+                onScoreTierChange?.(scoreTier === 'analytic' ? undefined : 'analytic');
+              } else {
+                handleScore();
+              }
+            }}
             disabled={scoring}
-            className="bg-gradient-to-br from-accent-green to-[#059669] text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold shadow-[0_2px_8px_rgba(16,185,129,0.3)] hover:shadow-[0_4px_16px_rgba(16,185,129,0.4)] hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold shadow-[0_2px_8px_rgba(16,185,129,0.3)] hover:shadow-[0_4px_16px_rgba(16,185,129,0.4)] hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed
+              ${scoreTier === 'analytic'
+                ? 'bg-accent-green text-white ring-2 ring-accent-green-light ring-offset-1 ring-offset-[#0f1629]'
+                : 'bg-gradient-to-br from-accent-green to-[#059669] text-white'
+              }`}
           >
             {scoring ? 'Scoring...' : scoreResult ?? 'Analytic Score'}
           </button>
         )}
 
-        {/* 4. AI Score button */}
+        {/* 4. AI Score button — click to validate, click again to filter */}
         {activeProfileId && (
           <button
-            onClick={handleAiValidate}
-            disabled={validating || !hasScored}
-            title={!hasScored ? 'Run Analytic Score first' : undefined}
-            className="bg-gradient-to-br from-accent-purple to-[#7c3aed] text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold shadow-[0_2px_8px_rgba(168,85,247,0.3)] hover:shadow-[0_4px_16px_rgba(168,85,247,0.4)] hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={() => {
+              if (aiResult && !validating) {
+                // Toggle filter
+                onScoreTierChange?.(scoreTier === 'ai' ? undefined : 'ai');
+              } else {
+                handleAiValidate();
+              }
+            }}
+            disabled={validating || (!hasScored && !aiResult)}
+            title={!hasScored && !aiResult ? 'Run Analytic Score first' : undefined}
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold shadow-[0_2px_8px_rgba(168,85,247,0.3)] hover:shadow-[0_4px_16px_rgba(168,85,247,0.4)] hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed
+              ${scoreTier === 'ai'
+                ? 'bg-accent-purple text-white ring-2 ring-[#a78bfa] ring-offset-1 ring-offset-[#0f1629]'
+                : 'bg-gradient-to-br from-accent-purple to-[#7c3aed] text-white'
+              }`}
           >
             {validating ? 'Validating...' : aiResult ?? 'AI Score'}
           </button>
