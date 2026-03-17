@@ -56,7 +56,7 @@ Keyword overlap ratio (Jaccard similarity) between the search profile's skills/t
 - Tokenize job description: lowercase, remove stopwords, stem words using `natural` stemmer
 - Extract matching terms: profile skills that appear in the tokenized job description
 - Score = (matched terms / total profile terms) × 100
-- Bonus: +10 for each exact tool/platform match (e.g., "Jira", "Power BI" found verbatim)
+- Bonus: +5 for each exact tool/platform match (e.g., "Jira", "Power BI" found verbatim), capped so total never exceeds 100
 - Uses `natural` npm package for tokenization and stemming only (not TF-IDF corpus)
 - Includes both hard skills (tools, technologies) and domain terms (infrastructure, security, data center)
 
@@ -212,6 +212,9 @@ When both resume and LinkedIn are uploaded:
 | parsed_tools | text | JSON array |
 | parsed_education | text | JSON object {degree, field} |
 | uploaded_at | text, not null, default now | |
+| updated_at | text, not null, default now | Updated on re-upload/re-parse |
+
+Re-upload replaces the existing document of that type (delete + insert) rather than creating duplicates. Max upload size: 10MB (enforced via multer config).
 
 **`profiles`**
 
@@ -237,6 +240,9 @@ When both resume and LinkedIn are uploaded:
 | ai_threshold | integer, not null, default 60 | Min IPE score for AI validation |
 | is_active | integer (boolean), not null, default 1 | |
 | created_at | text, not null, default now | |
+| updated_at | text, not null, default now | Updated on weight/field changes |
+
+**Weight change optimization:** When only weights change (not target skills/titles), `ipe_score` can be recalculated from stored dimension scores without re-running extraction: `UPDATE job_scores SET ipe_score = (freshness_score * w1 + ...) WHERE profile_id = ?`. No re-scoring needed.
 
 **`job_scores`**
 
@@ -253,6 +259,7 @@ When both resume and LinkedIn are uploaded:
 | competition_score | integer, not null | |
 | location_match_score | integer, not null | |
 | experience_align_score | integer, not null | |
+| matched_skills | text, nullable | JSON array of skills that matched between profile and job |
 | ai_validated | integer (boolean), not null, default 0 | |
 | ai_agrees | integer (boolean), nullable | |
 | ai_pitch | text, nullable | |
@@ -304,7 +311,7 @@ When both resume and LinkedIn are uploaded:
 | GET | /api/jobs | Adds `profileId` query param. When set, joins with `job_scores` for that profile, returns IPE score + AI data. Sorts by `ipe_score` by default. |
 | GET | /api/jobs/:id | Includes all profile scores for this job (from `job_scores`). |
 | GET | /api/stats | Adds `profileId` param. Stats scoped to profile's scores: avg IPE, top-scored count, AI-validated count, by-source breakdown. |
-| POST | /api/scrape | Uses active profile's `search_queries` for Indeed/Google Jobs/ZipRecruiter search terms instead of hardcoded queries. |
+| POST | /api/scrape | Collects union of all active profiles' `search_queries` (deduplicated) for Indeed/Google Jobs/ZipRecruiter. Scrapers gain a `searchQueries: string[]` parameter replacing hardcoded queries. `runAllSources` gains optional `searchQueries` parameter passed through to scrapers. |
 
 ## Frontend Changes
 
@@ -333,8 +340,8 @@ When both resume and LinkedIn are uploaded:
 
 **TopBar:**
 - Profile selector dropdown (replaces hardcoded "JobGrid" context)
-- "Score Now" button — runs IPE for active profile
-- "AI Validate Top" button — sends top matches to Groq
+- "Score Now" button — calls `POST /api/score/ipe/:profileId` (IPE only, instant)
+- "AI Validate Top" button — calls `POST /api/score/ai/:profileId` (sends unvalidated top matches to Groq)
 
 **JobCard:**
 - Shows IPE score (from `job_scores`) instead of `fit_score`
@@ -354,10 +361,38 @@ When both resume and LinkedIn are uploaded:
 | Package | Purpose | Size |
 |---|---|---|
 | `pdf-parse` | Extract text from PDF files | ~50KB |
-| `natural` | NLP: tokenizer, stemmer, TF-IDF, cosine similarity | ~2MB |
+| `natural` | NLP: tokenizer and stemmer (for skill matching preprocessing) | ~2MB |
 | `multer` | Express file upload middleware | ~30KB |
 
 All pure JavaScript, no native bindings, no Python required.
+
+## New Project Structure
+
+```
+packages/backend/src/
+├── documents/
+│   ├── parser.ts          # PDF text extraction via pdf-parse
+│   ├── extractor.ts       # Structured data extraction (skills, titles, certs)
+│   └── dictionary.ts      # Loads skill dictionary from data/skill-dictionary.json
+├── profiles/
+│   └── index.ts           # Profile CRUD operations
+├── ipe/
+│   ├── index.ts           # IPE scoring orchestrator
+│   ├── freshness.ts       # Freshness dimension scorer
+│   ├── skill-match.ts     # Jaccard skill match scorer
+│   ├── title-align.ts     # Fuzzy title alignment scorer
+│   ├── cert-match.ts      # Certification match scorer
+│   ├── competition.ts     # Competition/applicant scorer
+│   ├── location-match.ts  # Location match scorer
+│   └── experience.ts      # Experience alignment scorer
+├── api/routes/
+│   ├── documents.ts       # Upload/list/delete documents
+│   ├── profiles.ts        # Profile CRUD endpoints
+│   └── score.ts           # IPE scoring + AI validation endpoints
+└── ...existing files
+```
+
+Skill dictionary stored at `packages/backend/data/skill-dictionary.json` — a JSON object with categories (methodologies, tools, technical, certifications, domains, soft_skills). Editable by the user directly. No API endpoint for editing (file-based for simplicity).
 
 ## Scraper Integration
 
@@ -381,7 +416,7 @@ Each profile defines its own search queries. When a scrape runs, it collects the
 
 **Nightly cron integration:** The 2am scheduler triggers: (1) scrape using union of all active profile queries, (2) IPE score new jobs against all active profiles, (3) AI validate top matches per profile (above each profile's `ai_threshold`).
 
-**Outreach integration:** The outreach generation prompt (`scorer/prompts.ts`) switches from the hardcoded `PM_PROFILE` to the active search profile's data. The `buildOutreachPrompt` function takes a profile object parameter instead of calling `profileToString()`.
+**Outreach integration:** The outreach generation prompt (`scorer/prompts.ts`) switches from the hardcoded `PM_PROFILE` to the active search profile's data. The `buildOutreachPrompt` signature changes from `(input: {title, company, pitch, type})` to `(input: {title, company, pitch, type, profile: {target_skills, target_titles, target_certs, parsed_experience}})`. The profile data is fetched from the DB and passed in, replacing the hardcoded `profileToString()` call.
 
 ## Migration Strategy
 
@@ -391,7 +426,7 @@ Since the existing `jobs` table has 564 jobs with scoring columns:
 2. Create a "Legacy PM" profile from the existing hardcoded profile data
 3. Migrate existing scoring data from `jobs` into `job_scores` for the legacy profile. Map old text labels: `competition` "low"→85, "medium"→50, "high"→20. Map `fit_score` directly to `ipe_score`. Set `ai_validated=1`, `ai_agrees=1`, `ai_pitch=pitch`, for jobs that had Groq scores. Set all individual dimension scores to 0 (legacy data, will be overwritten on re-score).
 4. Drop the old scoring columns from `jobs` (`fit_score`, `competition`, `recommendation`, `pitch`, `score_reason`)
-5. Re-score all 564 jobs with the IPE engine against the new profile
+5. Re-score all 564 jobs with the IPE engine against the new profile. **Note:** Between steps 3-5, migrated `ipe_score` values won't match the dimension breakdown (dimensions are zeroed, composite is the old AI score). Build step 14 resolves this by re-scoring everything. The frontend should handle zero dimensions gracefully during this transitional state.
 
 ## Build Order
 
