@@ -347,6 +347,7 @@ export function createQueries(db: DB) {
       experienceWeight: number;
       analyticTopN: number;
       aiTopN: number;
+      profileHash: string | null;
       isActive: boolean;
       updatedAt: string;
     }>) {
@@ -394,8 +395,15 @@ export function createQueries(db: DB) {
       return db.insert(schema.jobScores).values(data).run();
     },
 
-    updateJobScoreAi(id: number, data: { aiValidated: boolean; aiAgrees: boolean | null; aiPitch: string | null; aiFlags: string | null }) {
+    updateJobScoreAi(id: number, data: { aiValidated: boolean; aiAgrees: boolean | null; aiPitch: string | null; aiFlags: string | null; aiFitAssessment?: string | null }) {
       return db.update(schema.jobScores).set(data).where(eq(schema.jobScores.id, id)).run();
+    },
+
+    clearAiValidation(profileId: number) {
+      return db.update(schema.jobScores)
+        .set({ aiValidated: false, aiAgrees: null, aiPitch: null, aiFlags: null, aiFitAssessment: null })
+        .where(eq(schema.jobScores.profileId, profileId))
+        .run();
     },
 
     getUnscoredJobIds(profileId: number) {

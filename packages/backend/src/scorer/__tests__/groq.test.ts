@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { scoreJob } from '../groq.js';
+import type { DynamicProfile } from '../prompts.js';
 
 vi.mock('groq-sdk', () => {
   const mockCreate = vi.fn();
@@ -19,9 +20,30 @@ vi.mock('groq-sdk', () => {
 import Groq from 'groq-sdk';
 const mockCreate = (Groq as any).__mockCreate;
 
+const mockProfile: DynamicProfile = {
+  name: 'Test User',
+  resumeText: 'Experienced PM.',
+  targetTitles: ['Project Manager'],
+  targetSkills: ['Python', 'SQL'],
+  targetCerts: ['CAPM'],
+  targetLocations: ['Remote'],
+  experienceYears: 5,
+};
+
 describe('scoreJob', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  it('returns null when no profile is provided', async () => {
+    const result = await scoreJob({
+      title: 'PM',
+      company: 'TestCo',
+      source: 'greenhouse',
+      description: 'A PM role',
+    });
+    expect(result).toBeNull();
+    expect(mockCreate).not.toHaveBeenCalled();
   });
 
   it('scores a job and returns validated response', async () => {
@@ -39,12 +61,10 @@ describe('scoreJob', () => {
       }],
     });
 
-    const result = await scoreJob({
-      title: 'PM',
-      company: 'TestCo',
-      source: 'greenhouse',
-      description: 'A PM role',
-    });
+    const result = await scoreJob(
+      { title: 'PM', company: 'TestCo', source: 'greenhouse', description: 'A PM role' },
+      mockProfile
+    );
 
     expect(result).toBeDefined();
     expect(result!.fit_score).toBe(85);
@@ -58,12 +78,10 @@ describe('scoreJob', () => {
       }],
     });
 
-    const result = await scoreJob({
-      title: 'PM',
-      company: 'TestCo',
-      source: 'greenhouse',
-      description: 'A PM role',
-    });
+    const result = await scoreJob(
+      { title: 'PM', company: 'TestCo', source: 'greenhouse', description: 'A PM role' },
+      mockProfile
+    );
 
     expect(result).toBeNull();
   });
@@ -71,12 +89,10 @@ describe('scoreJob', () => {
   it('returns null on API error', async () => {
     mockCreate.mockRejectedValueOnce(new Error('API error'));
 
-    const result = await scoreJob({
-      title: 'PM',
-      company: 'TestCo',
-      source: 'greenhouse',
-      description: 'A PM role',
-    });
+    const result = await scoreJob(
+      { title: 'PM', company: 'TestCo', source: 'greenhouse', description: 'A PM role' },
+      mockProfile
+    );
 
     expect(result).toBeNull();
   });

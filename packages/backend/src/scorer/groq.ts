@@ -1,5 +1,13 @@
 import Groq from 'groq-sdk';
-import { buildScoringPrompt, ScoreResponseSchema, type ScoreResponse } from './prompts.js';
+import {
+  buildScoringPrompt,
+  buildAiValidationPrompt,
+  ScoreResponseSchema,
+  AiValidationResponseSchema,
+  type ScoreResponse,
+  type AiValidationResponse,
+  type DynamicProfile,
+} from './prompts.js';
 
 let _client: Groq | null = null;
 function getClient(): Groq {
@@ -32,14 +40,14 @@ async function callWithRetry(prompt: string, retries = 0): Promise<string | null
   }
 }
 
-export async function scoreJob(job: {
-  title: string;
-  company: string;
-  source: string;
-  description: string | null;
-}): Promise<ScoreResponse | null> {
+export async function scoreJob(
+  job: { title: string; company: string; source: string; description: string | null },
+  profile?: DynamicProfile
+): Promise<ScoreResponse | null> {
+  if (!profile) return null;
+
   try {
-    const prompt = buildScoringPrompt(job);
+    const prompt = buildScoringPrompt(job, profile);
     const content = await callWithRetry(prompt);
     if (!content) return null;
 
@@ -54,6 +62,41 @@ export async function scoreJob(job: {
     return validated.data;
   } catch (err) {
     console.error(`Groq: Failed to score "${job.title}" at ${job.company}:`, err);
+    return null;
+  }
+}
+
+export async function validateJobAi(
+  job: { title: string; company: string; location: string | null; description: string | null },
+  ipeBreakdown: {
+    ipeScore: number;
+    skillMatch: number;
+    titleAlign: number;
+    freshness: number;
+    competition: number;
+    location: number;
+    certs: number;
+    experience: number;
+    matchedSkills: string[];
+  },
+  profile: DynamicProfile
+): Promise<AiValidationResponse | null> {
+  try {
+    const prompt = buildAiValidationPrompt(job, ipeBreakdown, profile);
+    const content = await callWithRetry(prompt);
+    if (!content) return null;
+
+    const parsed = JSON.parse(content);
+    const validated = AiValidationResponseSchema.safeParse(parsed);
+
+    if (!validated.success) {
+      console.error(`Groq: Invalid AI validation response for "${job.title}" at ${job.company}:`, validated.error.issues);
+      return null;
+    }
+
+    return validated.data;
+  } catch (err) {
+    console.error(`Groq: Failed AI validation for "${job.title}" at ${job.company}:`, err);
     return null;
   }
 }

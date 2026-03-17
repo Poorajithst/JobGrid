@@ -14,6 +14,7 @@ export const UpdateNotesSchema = z.object({
 
 export const OutreachRequestSchema = z.object({
   type: z.enum(['connection', 'email', 'inmail']),
+  profileId: z.number().optional(),
 });
 
 export const AddCompanySchema = z.object({

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import Groq from 'groq-sdk';
 import { OutreachRequestSchema } from '../schemas.js';
-import { buildOutreachPrompt } from '../../scorer/prompts.js';
+import { buildOutreachPrompt, type DynamicProfile } from '../../scorer/prompts.js';
 import type { createQueries } from '../../db/queries.js';
 
 let _client: Groq | null = null;
@@ -23,12 +23,46 @@ export function createOutreachRouter(queries: ReturnType<typeof createQueries>) 
         return;
       }
 
+      // Build a dynamic profile from available data
+      // If profileId is provided in the body, use it; otherwise build a minimal profile
+      let dynamicProfile: DynamicProfile = {
+        name: '',
+        resumeText: '',
+        targetTitles: [],
+        targetSkills: [],
+        targetCerts: [],
+        targetLocations: [],
+        experienceYears: 0,
+      };
+
+      if (parsed.profileId) {
+        const profile = queries.getProfileById(parsed.profileId);
+        if (profile) {
+          const userId = profile.userId;
+          const documents = userId ? queries.getDocumentsByUser(userId) : [];
+          const resumeTexts = documents
+            .filter((d: any) => d.type === 'resume')
+            .map((d: any) => d.parsedText || '')
+            .filter((t: string) => t.length > 0);
+
+          dynamicProfile = {
+            name: profile.name,
+            resumeText: resumeTexts.join('\n\n'),
+            targetTitles: JSON.parse(profile.targetTitles),
+            targetSkills: JSON.parse(profile.targetSkills),
+            targetCerts: profile.targetCerts ? JSON.parse(profile.targetCerts) : [],
+            targetLocations: profile.targetLocations ? JSON.parse(profile.targetLocations) : [],
+            experienceYears: profile.minExperienceYears || 0,
+          };
+        }
+      }
+
       const prompt = buildOutreachPrompt({
         title: job.title,
         company: job.company,
         pitch: job.pitch || '',
         type: parsed.type,
-      });
+      }, dynamicProfile);
 
       const response = await getClient().chat.completions.create({
         model: 'llama-3.3-70b-versatile',
