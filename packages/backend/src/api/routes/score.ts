@@ -48,11 +48,20 @@ export function createScoreRouter(queries: ReturnType<typeof createQueries>) {
         },
       };
 
-      // Get unscored job IDs
-      const unscoredIds = queries.getUnscoredJobIds(profileId);
+      // Get job IDs to score (force=true re-scores everything)
+      const force = req.query.force === 'true';
+      let jobIds: number[];
+      if (force) {
+        const allJobs = queries.getJobs({ page: 1, limit: 10000 });
+        // getJobs may return { jobs: [...] } or just [...]
+        const jobsArr = Array.isArray(allJobs) ? allJobs : (allJobs as any).jobs || [];
+        jobIds = jobsArr.map((j: any) => j.id);
+      } else {
+        jobIds = queries.getUnscoredJobIds(profileId);
+      }
       let scored = 0;
 
-      for (const jobId of unscoredIds) {
+      for (const jobId of jobIds) {
         const job = queries.getJobById(jobId);
         if (!job) continue;
 
@@ -83,7 +92,7 @@ export function createScoreRouter(queries: ReturnType<typeof createQueries>) {
         scored++;
       }
 
-      res.json({ scored, total: unscoredIds.length });
+      res.json({ scored, total: jobIds.length });
     } catch (err) { next(err); }
   });
 
