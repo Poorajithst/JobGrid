@@ -40,8 +40,8 @@ export function createDocumentsRouter(queries: ReturnType<typeof createQueries>)
       // Extract structured data
       const profile = extractProfileData(rawText);
 
-      // Delete existing document of same type (re-upload replaces)
-      queries.deleteDocumentByType(type);
+      // Delete existing document of same type for this user (re-upload replaces)
+      queries.deleteDocumentByTypeAndUser(type, req.userId);
 
       // Insert new document
       const doc = queries.insertDocument({
@@ -56,6 +56,7 @@ export function createDocumentsRouter(queries: ReturnType<typeof createQueries>)
         parsedIndustries: JSON.stringify(profile.industries),
         parsedTools: JSON.stringify(profile.tools),
         parsedEducation: profile.education ? JSON.stringify(profile.education) : null,
+        userId: req.userId,
       });
 
       res.json({
@@ -79,8 +80,8 @@ export function createDocumentsRouter(queries: ReturnType<typeof createQueries>)
   });
 
   // GET /api/documents
-  router.get('/', (_req, res) => {
-    const docs = queries.getDocuments();
+  router.get('/', (req, res) => {
+    const docs = queries.getDocumentsByUser(req.userId);
     res.json(docs);
   });
 

@@ -5,8 +5,8 @@ import type { createQueries } from '../../db/queries.js';
 export function createProfilesRouter(queries: ReturnType<typeof createQueries>) {
   const router = Router();
 
-  router.get('/', (_req, res) => {
-    res.json(queries.getProfiles());
+  router.get('/', (req, res) => {
+    res.json(queries.getProfilesByUser(req.userId));
   });
 
   router.get('/:id', (req, res) => {
@@ -26,6 +26,7 @@ export function createProfilesRouter(queries: ReturnType<typeof createQueries>) 
         targetLocations: parsed.targetLocations ? JSON.stringify(parsed.targetLocations) : null,
         searchQueries: parsed.searchQueries ? JSON.stringify(parsed.searchQueries) : null,
         titleSynonyms: parsed.titleSynonyms ? JSON.stringify(parsed.titleSynonyms) : null,
+        userId: req.userId,
       });
       res.status(201).json(profile);
     } catch (err) { next(err); }
@@ -51,7 +52,8 @@ export function createProfilesRouter(queries: ReturnType<typeof createQueries>) 
       if (parsed.competitionWeight !== undefined) updates.competitionWeight = parsed.competitionWeight;
       if (parsed.locationWeight !== undefined) updates.locationWeight = parsed.locationWeight;
       if (parsed.experienceWeight !== undefined) updates.experienceWeight = parsed.experienceWeight;
-      if (parsed.aiThreshold !== undefined) updates.aiThreshold = parsed.aiThreshold;
+      if (parsed.analyticTopN !== undefined) updates.analyticTopN = parsed.analyticTopN;
+      if (parsed.aiTopN !== undefined) updates.aiTopN = parsed.aiTopN;
       if (parsed.isActive !== undefined) updates.isActive = parsed.isActive;
 
       // If only weights changed, recalculate IPE scores without full re-score
@@ -86,7 +88,7 @@ export function createProfilesRouter(queries: ReturnType<typeof createQueries>) 
 
   // Auto-populate from documents
   router.post('/:id/auto-populate', (req, res) => {
-    const merged = queries.getMergedProfile();
+    const merged = queries.getMergedProfileByUser(req.userId);
     const id = parseInt(req.params.id, 10);
     queries.updateProfile(id, {
       targetSkills: JSON.stringify(merged.skills),

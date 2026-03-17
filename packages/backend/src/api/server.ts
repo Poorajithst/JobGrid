@@ -12,6 +12,8 @@ import { createDocumentsRouter } from './routes/documents.js';
 import { createProfilesRouter } from './routes/profiles.js';
 import { createScoreRouter } from './routes/score.js';
 import { errorHandler } from './middleware/errors.js';
+import { userContext } from './middleware/user-context.js';
+import { createUsersRouter } from './routes/users.js';
 import { runAllSources } from '../sources/index.js';
 import { scoreJobs } from '../scorer/index.js';
 import { calculateIpeScore, type ProfileConfig, type JobData } from '../ipe/index.js';
@@ -23,6 +25,7 @@ const app = express();
 
 app.use(cors({ origin: ['http://localhost:5173'] }));
 app.use(express.json());
+app.use(userContext);
 
 async function triggerScrape() {
   const run = queries.createScrapeRun({
@@ -178,6 +181,7 @@ async function triggerScrape() {
   }
 }
 
+app.use('/api/users', createUsersRouter(queries));
 app.use('/api/jobs', createJobsRouter(queries));
 app.use('/api/stats', createStatsRouter(queries));
 app.use('/api/scrape', createScrapeRouter(queries, triggerScrape));

@@ -76,7 +76,7 @@ export function createScoreRouter(queries: ReturnType<typeof createQueries>) {
       const profile = queries.getProfileById(profileId);
       if (!profile) { res.status(404).json({ error: 'Profile not found' }); return; }
 
-      const topScores = queries.getTopUnvalidatedScores(profileId, profile.aiThreshold);
+      const topScores = queries.getTopUnvalidatedScores(profileId, 0);
       // AI validation will be wired in Chunk 5 integration
       res.json({ eligible: topScores.length, message: 'AI validation placeholder — will be wired in integration step' });
     } catch (err) { next(err); }

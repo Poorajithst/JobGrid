@@ -41,9 +41,10 @@ export function createOutreachRouter(queries: ReturnType<typeof createQueries>) 
         jobId: job.id,
         type: parsed.type,
         content,
+        userId: req.userId,
       });
 
-      const allDrafts = queries.getOutreachByJobId(job.id);
+      const allDrafts = queries.getOutreachByJobIdAndUser(job.id, req.userId);
       res.json({ content, history: allDrafts });
     } catch (err) {
       next(err);

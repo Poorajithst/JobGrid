@@ -1,6 +1,13 @@
 import { sqliteTable, text, integer, real, uniqueIndex, index } from 'drizzle-orm/sqlite-core';
 import { sql } from 'drizzle-orm';
 
+export const users = sqliteTable('users', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  name: text('name').notNull(),
+  avatarColor: text('avatar_color').notNull().default('#6366f1'),
+  createdAt: text('created_at').notNull().default(sql`(datetime('now'))`),
+});
+
 export const companies = sqliteTable('companies', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   name: text('name').notNull(),
@@ -47,6 +54,7 @@ export const outreach = sqliteTable('outreach', {
   type: text('type').notNull(),
   content: text('content').notNull(),
   createdAt: text('created_at').notNull().default(sql`(datetime('now'))`),
+  userId: integer('user_id'),
 });
 
 export const scrapeRuns = sqliteTable('scrape_runs', {
@@ -75,6 +83,7 @@ export const documents = sqliteTable('documents', {
   parsedEducation: text('parsed_education'), // JSON {degree, field}
   uploadedAt: text('uploaded_at').notNull().default(sql`(datetime('now'))`),
   updatedAt: text('updated_at').notNull().default(sql`(datetime('now'))`),
+  userId: integer('user_id'),
 });
 
 export const profiles = sqliteTable('profiles', {
@@ -95,10 +104,13 @@ export const profiles = sqliteTable('profiles', {
   competitionWeight: real('competition_weight').notNull().default(0.10),
   locationWeight: real('location_weight').notNull().default(0.10),
   experienceWeight: real('experience_weight').notNull().default(0.05),
-  aiThreshold: integer('ai_threshold').notNull().default(60),
+  analyticTopN: integer('analytic_top_n').notNull().default(35),
+  aiTopN: integer('ai_top_n').notNull().default(15),
+  profileHash: text('profile_hash'),
   isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
   createdAt: text('created_at').notNull().default(sql`(datetime('now'))`),
   updatedAt: text('updated_at').notNull().default(sql`(datetime('now'))`),
+  userId: integer('user_id'),
 });
 
 export const jobScores = sqliteTable('job_scores', {
@@ -118,6 +130,7 @@ export const jobScores = sqliteTable('job_scores', {
   aiAgrees: integer('ai_agrees', { mode: 'boolean' }),
   aiPitch: text('ai_pitch'),
   aiFlags: text('ai_flags'),
+  aiFitAssessment: text('ai_fit_assessment'),
   scoredAt: text('scored_at').notNull().default(sql`(datetime('now'))`),
 }, (table) => [
   uniqueIndex('idx_job_scores_unique').on(table.jobId, table.profileId),

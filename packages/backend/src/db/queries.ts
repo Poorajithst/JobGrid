@@ -191,7 +191,7 @@ export function createQueries(db: DB) {
         .all();
     },
 
-    insertOutreach(data: { jobId: number; type: string; content: string }) {
+    insertOutreach(data: { jobId: number; type: string; content: string; userId?: number }) {
       return db.insert(schema.outreach).values(data).returning().get();
     },
 
@@ -256,6 +256,7 @@ export function createQueries(db: DB) {
       parsedIndustries: string | null;
       parsedTools: string | null;
       parsedEducation: string | null;
+      userId?: number;
     }) {
       return db.insert(schema.documents).values(data).run();
     },
@@ -324,6 +325,7 @@ export function createQueries(db: DB) {
       maxExperienceYears?: number | null;
       searchQueries?: string | null;
       titleSynonyms?: string | null;
+      userId?: number;
     }) {
       return db.insert(schema.profiles).values(data).returning().get();
     },
@@ -343,7 +345,8 @@ export function createQueries(db: DB) {
       competitionWeight: number;
       locationWeight: number;
       experienceWeight: number;
-      aiThreshold: number;
+      analyticTopN: number;
+      aiTopN: number;
       isActive: boolean;
       updatedAt: string;
     }>) {
@@ -442,6 +445,104 @@ export function createQueries(db: DB) {
           .where(eq(schema.jobScores.id, s.id)).run();
       }
       return scores.length;
+    },
+
+    // ── Users ──────────────────────────────────────────────────
+    getUsers() {
+      return db.select().from(schema.users).all();
+    },
+
+    getUserById(id: number) {
+      return db.select().from(schema.users).where(eq(schema.users.id, id)).get();
+    },
+
+    insertUser(data: { name: string; avatarColor?: string }) {
+      return db.insert(schema.users).values({
+        name: data.name,
+        avatarColor: data.avatarColor || '#6366f1',
+      }).returning().get();
+    },
+
+    updateUser(id: number, data: Partial<{ name: string; avatarColor: string }>) {
+      return db.update(schema.users).set(data).where(eq(schema.users.id, id)).returning().get();
+    },
+
+    deleteUser(id: number) {
+      // Cascade: delete outreach, job_scores (via profiles), profiles, documents for user
+      const userProfiles = db.select({ id: schema.profiles.id }).from(schema.profiles)
+        .where(eq(schema.profiles.userId, id)).all();
+      for (const p of userProfiles) {
+        db.delete(schema.jobScores).where(eq(schema.jobScores.profileId, p.id)).run();
+      }
+      db.delete(schema.outreach).where(eq(schema.outreach.userId, id)).run();
+      db.delete(schema.profiles).where(eq(schema.profiles.userId, id)).run();
+      db.delete(schema.documents).where(eq(schema.documents.userId, id)).run();
+      return db.delete(schema.users).where(eq(schema.users.id, id)).returning().get();
+    },
+
+    // ── User-scoped document queries ─────────────────────────
+    getDocumentsByUser(userId: number) {
+      return db.select().from(schema.documents).where(eq(schema.documents.userId, userId)).all();
+    },
+
+    getDocumentsByTypeAndUser(type: string, userId: number) {
+      return db.select().from(schema.documents)
+        .where(and(eq(schema.documents.type, type), eq(schema.documents.userId, userId))).all();
+    },
+
+    deleteDocumentByTypeAndUser(type: string, userId: number) {
+      return db.delete(schema.documents)
+        .where(and(eq(schema.documents.type, type), eq(schema.documents.userId, userId))).run();
+    },
+
+    getMergedProfileByUser(userId: number) {
+      const docs = db.select().from(schema.documents)
+        .where(eq(schema.documents.userId, userId)).all();
+      const allSkills = new Set<string>();
+      const allTitles = new Set<string>();
+      const allCerts = new Set<string>();
+      const allLocations = new Set<string>();
+      const allTools = new Set<string>();
+      const allIndustries = new Set<string>();
+      let maxYears = 0;
+
+      for (const doc of docs) {
+        if (doc.parsedSkills) JSON.parse(doc.parsedSkills).forEach((s: string) => allSkills.add(s));
+        if (doc.parsedTitles) JSON.parse(doc.parsedTitles).forEach((t: string) => allTitles.add(t));
+        if (doc.parsedCerts) JSON.parse(doc.parsedCerts).forEach((c: string) => allCerts.add(c));
+        if (doc.parsedLocations) JSON.parse(doc.parsedLocations).forEach((l: string) => allLocations.add(l));
+        if (doc.parsedTools) JSON.parse(doc.parsedTools).forEach((t: string) => allTools.add(t));
+        if (doc.parsedIndustries) JSON.parse(doc.parsedIndustries).forEach((i: string) => allIndustries.add(i));
+        if (doc.parsedExperienceYears && doc.parsedExperienceYears > maxYears) {
+          maxYears = doc.parsedExperienceYears;
+        }
+      }
+
+      return {
+        skills: [...allSkills],
+        titles: [...allTitles],
+        certs: [...allCerts],
+        locations: [...allLocations],
+        tools: [...allTools],
+        industries: [...allIndustries],
+        experienceYears: maxYears,
+      };
+    },
+
+    // ── User-scoped profile queries ─────────────────────────
+    getProfilesByUser(userId: number) {
+      return db.select().from(schema.profiles).where(eq(schema.profiles.userId, userId)).all();
+    },
+
+    getActiveProfilesByUser(userId: number) {
+      return db.select().from(schema.profiles)
+        .where(and(eq(schema.profiles.userId, userId), eq(schema.profiles.isActive, true))).all();
+    },
+
+    // ── User-scoped outreach queries ─────────────────────────
+    getOutreachByJobIdAndUser(jobId: number, userId: number) {
+      return db.select().from(schema.outreach)
+        .where(and(eq(schema.outreach.jobId, jobId), eq(schema.outreach.userId, userId))).all();
     },
 
     // ── Stats ──────────────────────────────────────────────────

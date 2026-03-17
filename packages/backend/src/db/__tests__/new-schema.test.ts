@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { documents, profiles, jobScores } from '../schema.js';
+import { documents, profiles, jobScores, users, outreach } from '../schema.js';
 import { getTableColumns } from 'drizzle-orm';
 
 describe('New Tables Schema', () => {
@@ -35,8 +35,11 @@ describe('New Tables Schema', () => {
     expect(cols.competitionWeight).toBeDefined();
     expect(cols.locationWeight).toBeDefined();
     expect(cols.experienceWeight).toBeDefined();
-    expect(cols.aiThreshold).toBeDefined();
+    expect(cols.analyticTopN).toBeDefined();
+    expect(cols.aiTopN).toBeDefined();
+    expect(cols.profileHash).toBeDefined();
     expect(cols.isActive).toBeDefined();
+    expect(cols.userId).toBeDefined();
   });
 
   it('jobScores table has required columns', () => {
@@ -57,5 +60,24 @@ describe('New Tables Schema', () => {
     expect(cols.aiAgrees).toBeDefined();
     expect(cols.aiPitch).toBeDefined();
     expect(cols.aiFlags).toBeDefined();
+    expect(cols.aiFitAssessment).toBeDefined();
+  });
+
+  it('users table has required columns', () => {
+    const cols = getTableColumns(users);
+    expect(cols.id).toBeDefined();
+    expect(cols.name).toBeDefined();
+    expect(cols.avatarColor).toBeDefined();
+    expect(cols.createdAt).toBeDefined();
+  });
+
+  it('documents table has userId column', () => {
+    const cols = getTableColumns(documents);
+    expect(cols.userId).toBeDefined();
+  });
+
+  it('outreach table has userId column', () => {
+    const cols = getTableColumns(outreach);
+    expect(cols.userId).toBeDefined();
   });
 });

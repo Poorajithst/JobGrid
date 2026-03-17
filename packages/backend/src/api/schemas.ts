@@ -56,7 +56,8 @@ export const UpdateProfileSchema = z.object({
   competitionWeight: z.number().min(0).max(1).optional(),
   locationWeight: z.number().min(0).max(1).optional(),
   experienceWeight: z.number().min(0).max(1).optional(),
-  aiThreshold: z.number().min(0).max(100).optional(),
+  analyticTopN: z.number().min(1).max(100).optional(),
+  aiTopN: z.number().min(1).max(100).optional(),
   isActive: z.boolean().optional(),
 }).refine(data => {
   const weights = [data.freshnessWeight, data.skillWeight, data.titleWeight,
