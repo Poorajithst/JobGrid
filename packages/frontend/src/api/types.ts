@@ -94,11 +94,14 @@ export interface Document {
   id: number;
   type: 'resume' | 'linkedin';
   filename: string;
-  parsed_skills: string[] | null;
-  parsed_titles: string[] | null;
-  parsed_certs: string[] | null;
-  parsed_locations: string[] | null;
-  uploaded_at: string;
+  parsedSkills: string | null;
+  parsedTitles: string | null;
+  parsedCerts: string | null;
+  parsedLocations: string | null;
+  parsedTools: string | null;
+  parsedExperienceYears: number | null;
+  uploadedAt: string;
+  updatedAt: string;
 }
 
 /* ── IPE: Profiles ── */

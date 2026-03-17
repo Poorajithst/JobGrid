@@ -182,11 +182,12 @@ function UploadZone({ label, doc, uploading, onUpload, onRemove }: UploadZonePro
             </button>
           </div>
           <div className="text-[10px] text-text-dim mb-2">
-            Uploaded {new Date(doc.uploaded_at).toLocaleDateString()}
+            Uploaded {doc.uploadedAt ? new Date(doc.uploadedAt.replace(' ', 'T') + 'Z').toLocaleDateString() : 'recently'}
           </div>
-          <TagGroup label="Skills" tags={doc.parsed_skills} color="indigo" />
-          <TagGroup label="Titles" tags={doc.parsed_titles} color="cyan" />
-          <TagGroup label="Certs" tags={doc.parsed_certs} color="amber" />
+          <TagGroup label="Skills" tags={parseJsonArray(doc.parsedSkills)} color="indigo" />
+          <TagGroup label="Titles" tags={parseJsonArray(doc.parsedTitles)} color="cyan" />
+          <TagGroup label="Certs" tags={parseJsonArray(doc.parsedCerts)} color="amber" />
+          <TagGroup label="Tools" tags={parseJsonArray(doc.parsedTools)} color="green" />
         </div>
       )}
     </div>
@@ -201,6 +202,16 @@ const TAG_COLORS: Record<string, string> = {
   amber: 'bg-accent-amber/10 text-accent-amber-light border-accent-amber/20',
   green: 'bg-accent-green/10 text-accent-green-light border-accent-green/20',
 };
+
+function parseJsonArray(val: string | null): string[] | null {
+  if (!val) return null;
+  try {
+    const parsed = JSON.parse(val);
+    return Array.isArray(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
 
 function TagGroup({ label, tags, color }: { label: string; tags: string[] | null; color: string }) {
   if (!tags || tags.length === 0) return null;
