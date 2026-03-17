@@ -54,6 +54,20 @@ Netflix-style user switching. No passwords, no auth — just profile selection.
 - `profiles.user_id` — integer, FK → users.id, not null
 - `outreach.user_id` — integer, FK → users.id, not null
 
+### Migration strategy for user_id columns
+
+Existing rows in `documents`, `profiles`, `outreach` need a user_id. Migration steps:
+1. Create `users` table
+2. Insert a default user: `{ name: 'Default User', avatarColor: '#6366f1' }` → id=1
+3. Add `user_id` columns as nullable first (ALTER TABLE via Drizzle migration)
+4. Backfill all existing rows with `user_id = 1`
+5. Set columns to NOT NULL via subsequent migration
+6. Add FK constraints
+
+### userId API middleware
+
+Create `middleware/user-context.ts` — extracts `userId` from `X-User-Id` header (preferred) or `userId` query param. Falls back to userId=1 if missing (backward compatible during rollout). Attaches `req.userId` for all downstream routes. All user-scoped routes use `req.userId` for filtering.
+
 ## First-Time Setup (Onboarding Wizard)
 
 Triggered when a user has no profiles yet. A multi-step guided flow:
@@ -65,6 +79,7 @@ Triggered when a user has no profiles yet. A multi-step guided flow:
 ### Step 2: Upload Resume
 - Drag-drop resume PDF
 - LinkedIn PDF optional (can skip, add later)
+- Reuses existing `POST /api/documents/upload` endpoint (from IPE spec) — no duplicate extraction logic
 - System extracts: skills, titles, certs, experience years, locations, tools, industries
 
 ### Step 3: Review Extracted Data
@@ -128,6 +143,10 @@ For each job with NULL description:
 
 `GET /api/enrich/status` — returns `{ total: 587, enriched: 342, pending: 245, running: boolean }`.
 
+`POST /api/enrich/:jobId` — enriches a single job's description. Used by the "Fetch Description" button in DetailPanel.
+
+Route file: `packages/backend/src/api/routes/enrich.ts` — mounted as `app.use('/api/enrich', createEnrichRouter(queries))`.
+
 ### Auto-trigger
 - After each scrape completes, auto-trigger enrichment for new jobs
 - Frontend shows enrichment progress bar in TopBar when running
@@ -183,9 +202,11 @@ Add to `profiles` table:
 
 | Column | Type | Notes |
 |---|---|---|
-| analytic_top_n | integer, not null, default 35 | How many pass IPE filter |
+| analytic_top_n | integer, not null, default 35 | How many pass IPE filter (replaces `ai_threshold` score cutoff — count-based is more predictable) |
 | ai_top_n | integer, not null, default 15 | How many AI shows as final |
 | profile_hash | text, nullable | SHA-256 for AI token cache |
+
+**Note:** `ai_threshold` (from IPE spec, score-based cutoff) is replaced by `analytic_top_n` (count-based cutoff). Drop `ai_threshold` column in the same migration that adds these columns. Count-based is more user-friendly ("show me top 35") than score-based ("show me jobs above 60").
 
 ### AI Token Caching
 
@@ -247,6 +268,8 @@ Return JSON only:
 
 Zod validation on response. On parse failure, retry once. On second failure, mark job as `ai_validated=true, ai_agrees=null` (failed validation, don't waste more tokens).
 
+**Schema addition:** Add `ai_fit_assessment` column (text, nullable) to `job_scores` table to store the `fit_assessment` paragraph from the AI response.
+
 Batch processing: score sequentially with 1s pause between jobs. On 429 rate limit, exponential backoff (existing retry logic in groq.ts).
 
 ## DetailPanel: JD Viewer with Highlights
@@ -281,10 +304,16 @@ Batch processing: score sequentially with 1s pause between jobs. On 429 rate lim
 
 ### Modified Components
 
-**TopBar:**
+**TopBar** (replaces existing buttons):
+- Old "Run Now" → renamed "Scrape" (triggers job scraping)
+- Old "Score Now" → renamed "Analytic Score" (runs IPE)
+- Old "AI Validate Top" → renamed "AI Score" (runs Groq on top N)
+- New "Enrich JDs" button added
+
+Layout:
 - Left: UserSwitcher avatar + profile dropdown
 - Center: stat badges (adapt to scoring stage)
-- Right: [Enrich JDs] [Analytic Score] [AI Score] buttons with states:
+- Right: [Scrape] [Enrich JDs] [Analytic Score] [AI Score] buttons with states:
   - Enrich: shows progress bar when running, "Enrich JDs (245 pending)" when idle
   - Analytic Score: "Score" when ready, "Scoring..." when running, "35 matches" when done
   - AI Score: disabled until Analytic done, "AI Score" when ready, "Validating 12/35..." when running, "15 best" when done
@@ -337,15 +366,20 @@ All existing user-scoped endpoints add `userId` filtering:
 
 Delete `packages/backend/src/scorer/profile.ts` — the `PM_PROFILE` constant is replaced entirely by database-driven profiles. Update all imports that reference it to use profile data from the database instead.
 
+## Additional API Endpoints
+
+- `POST /api/score/ai/:profileId/:jobId` — AI validate a single job (for "Validate with AI" button in DetailPanel)
+
 ## Build Order
 
-1. **Users table + CRUD + user switcher UI** — foundation for everything
-2. **Add user_id to documents/profiles/outreach** — migration + API scoping
-3. **Onboarding wizard** — first-time setup flow (name → resume → review → profile)
-4. **JD enrichment** — cheerio + Playwright hybrid fetcher, endpoint, auto-trigger
-5. **Analytic Score button** — IPE scoring with auto-filter to top N
-6. **AI Score with caching** — Groq validation, profile hash, token caching
-7. **DetailPanel JD viewer** — description with highlights, AI assessment display
-8. **TopBar button states** — progress indicators, enable/disable logic
-9. **Remove hardcoded profile** — delete PM_PROFILE, update all references
-10. **Enrichment progress bar** — TopBar indicator during background enrichment
+1. **Users table + CRUD + userId middleware** — foundation for multi-user
+2. **Add user_id to documents/profiles/outreach** — migration with backfill to default user
+3. **Rewrite prompts.ts** — remove hardcoded PM_PROFILE dependency, accept dynamic profile data. Delete `scorer/profile.ts`. This must happen before AI Score (step 7) since the AI prompt uses profile data.
+4. **Add analytic_top_n/ai_top_n/profile_hash columns** — migration, drop ai_threshold, add ai_fit_assessment to job_scores
+5. **JD enrichment** — cheerio + Playwright hybrid fetcher, route file, single-job + batch endpoints, auto-trigger after scrape
+6. **User switcher + onboarding wizard UI** — frontend multi-step setup flow, reuses existing document upload endpoint
+7. **Analytic Score button** — IPE scoring with auto-filter to top N
+8. **AI Score with caching** — Groq validation with new dynamic prompt, profile hash, token caching, per-job endpoint
+9. **DetailPanel JD viewer** — description with keyword highlights, AI assessment display, fetch/validate buttons
+10. **TopBar button states + enrichment progress** — rename buttons, progress indicators, enable/disable logic
+11. **Navigation + settings** — Dashboard/Documents/Profiles/Settings tabs, user management
