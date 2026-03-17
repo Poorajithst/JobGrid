@@ -43,13 +43,24 @@ export function buildOutreachPrompt(input: {
   company: string;
   pitch: string;
   type: 'connection' | 'email' | 'inmail';
+  profile?: {
+    target_skills: string[];
+    target_titles: string[];
+    target_certs: string[];
+  };
 }): string {
+  const profileSection = input.profile
+    ? `TARGET SKILLS: ${input.profile.target_skills.join(', ')}
+TARGET TITLES: ${input.profile.target_titles.join(', ')}
+CERTIFICATIONS: ${input.profile.target_certs.join(', ')}`
+    : profileToString();
+
   return `You are a professional outreach message writer.
 
 Write a ${input.type} message for this job application.
 
 CANDIDATE PROFILE:
-${profileToString()}
+${profileSection}
 
 JOB: ${input.title} at ${input.company}
 SEED PITCH: ${input.pitch}

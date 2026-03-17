@@ -14,7 +14,7 @@ export interface SourceResult {
   errors: string[];
 }
 
-export async function runAllSources(companies: CompanyInput[]): Promise<SourceResult> {
+export async function runAllSources(companies: CompanyInput[], searchQueries?: string[]): Promise<SourceResult> {
   const allJobs: RawJob[] = [];
   const sourcesRun: string[] = [];
   const errors: string[] = [];
@@ -38,7 +38,7 @@ export async function runAllSources(companies: CompanyInput[]): Promise<SourceRe
 
     try {
       sourcesRun.push('indeed');
-      const indeedJobs = await scrapeIndeed(page);
+      const indeedJobs = await scrapeIndeed(page, searchQueries);
       allJobs.push(...indeedJobs);
     } catch (err) {
       errors.push(`Indeed: ${err}`);
@@ -46,7 +46,7 @@ export async function runAllSources(companies: CompanyInput[]): Promise<SourceRe
 
     try {
       sourcesRun.push('google-jobs');
-      const googleJobs = await scrapeGoogleJobs(page);
+      const googleJobs = await scrapeGoogleJobs(page, searchQueries);
       allJobs.push(...googleJobs);
     } catch (err) {
       errors.push(`Google Jobs: ${err}`);
@@ -54,7 +54,7 @@ export async function runAllSources(companies: CompanyInput[]): Promise<SourceRe
 
     try {
       sourcesRun.push('ziprecruiter');
-      const zipJobs = await scrapeZipRecruiter(page);
+      const zipJobs = await scrapeZipRecruiter(page, searchQueries);
       allJobs.push(...zipJobs);
     } catch (err) {
       errors.push(`ZipRecruiter: ${err}`);

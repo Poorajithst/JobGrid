@@ -14,6 +14,7 @@ import { createScoreRouter } from './routes/score.js';
 import { errorHandler } from './middleware/errors.js';
 import { runAllSources } from '../sources/index.js';
 import { scoreJobs } from '../scorer/index.js';
+import { calculateIpeScore, type ProfileConfig, type JobData } from '../ipe/index.js';
 
 const PORT = parseInt(process.env.PORT || '3001', 10);
 const queries = createQueries(db);
@@ -38,8 +39,21 @@ async function triggerScrape() {
       leverSlug: c.leverSlug ?? null,
     }));
 
+    // Collect search queries from all active profiles
+    const activeProfiles = queries.getActiveProfiles();
+    const allQueries = new Set<string>();
+    for (const p of activeProfiles) {
+      if (p.searchQueries) {
+        try {
+          const pQueries: string[] = JSON.parse(p.searchQueries);
+          for (const q of pQueries) allQueries.add(q);
+        } catch { /* skip malformed JSON */ }
+      }
+    }
+    const searchQueries = allQueries.size > 0 ? [...allQueries] : undefined;
+
     // Run all sources (returns SourceResult with jobs, sourcesRun, errors)
-    const result = await runAllSources(companies);
+    const result = await runAllSources(companies, searchQueries);
     const { jobs: allJobs, sourcesRun, errors } = result;
 
     // Filter to only new jobs (DB-level dedup)
@@ -82,6 +96,60 @@ async function triggerScrape() {
           pitch: s.pitch,
           scoreReason: s.scoreReason,
         });
+      }
+    }
+
+    // Run IPE scoring against all active profiles
+    for (const profile of activeProfiles) {
+      const config: ProfileConfig = {
+        targetTitles: JSON.parse(profile.targetTitles),
+        targetSkills: JSON.parse(profile.targetSkills),
+        targetCerts: profile.targetCerts ? JSON.parse(profile.targetCerts) : [],
+        targetLocations: profile.targetLocations ? JSON.parse(profile.targetLocations) : [],
+        experienceYears: profile.minExperienceYears || 0,
+        titleSynonyms: profile.titleSynonyms ? JSON.parse(profile.titleSynonyms) : {},
+        weights: {
+          freshness: profile.freshnessWeight,
+          skill: profile.skillWeight,
+          title: profile.titleWeight,
+          cert: profile.certWeight,
+          competition: profile.competitionWeight,
+          location: profile.locationWeight,
+          experience: profile.experienceWeight,
+        },
+      };
+
+      const unscoredIds = queries.getUnscoredJobIds(profile.id);
+      for (const jobId of unscoredIds) {
+        const job = queries.getJobById(jobId);
+        if (!job) continue;
+
+        const jobData: JobData = {
+          title: job.title,
+          description: job.description,
+          location: job.location,
+          postedAt: job.postedAt,
+          applicants: job.applicants,
+        };
+
+        const ipeResult = calculateIpeScore(config, jobData);
+        queries.upsertJobScore({
+          jobId,
+          profileId: profile.id,
+          ipeScore: ipeResult.ipeScore,
+          freshnessScore: ipeResult.dimensions.freshnessScore,
+          skillMatchScore: ipeResult.dimensions.skillMatchScore,
+          titleAlignmentScore: ipeResult.dimensions.titleAlignmentScore,
+          certMatchScore: ipeResult.dimensions.certMatchScore,
+          competitionScore: ipeResult.dimensions.competitionScore,
+          locationMatchScore: ipeResult.dimensions.locationMatchScore,
+          experienceAlignScore: ipeResult.dimensions.experienceAlignScore,
+          matchedSkills: JSON.stringify(ipeResult.matchedSkills),
+        });
+      }
+
+      if (unscoredIds.length > 0) {
+        console.log(`IPE scored ${unscoredIds.length} jobs for profile "${profile.name}"`);
       }
     }
 

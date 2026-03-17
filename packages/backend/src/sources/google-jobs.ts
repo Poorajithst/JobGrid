@@ -9,10 +9,11 @@ const SEARCH_QUERIES = [
   '"infrastructure PM" remote',
 ];
 
-export async function scrapeGoogleJobs(page: Page): Promise<RawJob[]> {
+export async function scrapeGoogleJobs(page: Page, searchQueries?: string[]): Promise<RawJob[]> {
   const results: RawJob[] = [];
+  const queries = searchQueries && searchQueries.length > 0 ? searchQueries : SEARCH_QUERIES;
 
-  for (const query of SEARCH_QUERIES) {
+  for (const query of queries) {
     try {
       await page.goto(
         `https://www.google.com/search?q=${encodeURIComponent(query)}&ibp=htl;jobs`,
