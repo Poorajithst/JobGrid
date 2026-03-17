@@ -33,7 +33,19 @@ function getScoreStyle(score: number | null) {
   return 'border-accent-red/40 text-accent-red-light shadow-[0_0_12px_rgba(239,68,68,0.2)] bg-[radial-gradient(circle,rgba(239,68,68,0.2)_0%,transparent_70%)]';
 }
 
+function getFreshnessDot(postedAt: string | null): { color: string; title: string } {
+  if (!postedAt) return { color: 'bg-text-dim', title: 'Unknown date' };
+  const hoursAgo = (Date.now() - new Date(postedAt).getTime()) / (1000 * 60 * 60);
+  if (hoursAgo < 24) return { color: 'bg-accent-green shadow-[0_0_6px_rgba(16,185,129,0.5)]', title: 'Posted < 24h ago' };
+  if (hoursAgo < 48) return { color: 'bg-accent-amber shadow-[0_0_6px_rgba(245,158,11,0.5)]', title: 'Posted < 48h ago' };
+  return { color: 'bg-text-dim', title: 'Posted > 48h ago' };
+}
+
 export function JobCard({ job, isActive, onClick }: JobCardProps) {
+  // Prefer IPE score if available, fall back to fit_score
+  const displayScore = job.job_scores?.ipe_score ?? job.fit_score;
+  const freshness = getFreshnessDot(job.posted_at);
+
   return (
     <div
       onClick={onClick}
@@ -48,13 +60,26 @@ export function JobCard({ job, isActive, onClick }: JobCardProps) {
       )}
       <div className="flex justify-between items-start gap-2.5">
         <div>
-          <div className="text-[13px] font-semibold text-text-primary leading-snug">{job.title}</div>
+          <div className="flex items-center gap-1.5">
+            <div className={`w-2 h-2 rounded-full shrink-0 ${freshness.color}`} title={freshness.title} />
+            <div className="text-[13px] font-semibold text-text-primary leading-snug">{job.title}</div>
+          </div>
           <div className="text-[11px] text-text-muted mt-0.5">
             {job.company} &middot; {job.location || 'Location N/A'}
           </div>
         </div>
-        <div className={`w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-extrabold shrink-0 border-2 ${getScoreStyle(job.fit_score)}`}>
-          {job.fit_score ?? '—'}
+        <div className="flex items-center gap-1.5 shrink-0">
+          {job.job_scores?.ai_validated && (
+            <div
+              className="w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold bg-accent-purple/20 text-accent-purple-light border border-accent-purple/30"
+              title="AI Validated"
+            >
+              AI
+            </div>
+          )}
+          <div className={`w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-extrabold border-2 ${getScoreStyle(displayScore)}`}>
+            {displayScore ?? '\u2014'}
+          </div>
         </div>
       </div>
       <div className="flex gap-[5px] mt-2">
@@ -74,7 +99,7 @@ export function JobCard({ job, isActive, onClick }: JobCardProps) {
       </div>
       {job.posted_at && (
         <div className="text-[10px] text-[#334155] mt-1.5">
-          Posted {job.posted_at} {job.applicants ? `· ${job.applicants} applicants` : ''}
+          Posted {job.posted_at} {job.applicants ? `\u00b7 ${job.applicants} applicants` : ''}
         </div>
       )}
     </div>

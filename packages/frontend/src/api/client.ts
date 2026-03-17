@@ -3,9 +3,14 @@ import type {
   JobsResponse,
   JobWithOutreach,
   Stats,
+  IpeStats,
   ScrapeRun,
   Company,
   JobFilters,
+  Document,
+  Profile,
+  ProfileCreate,
+  ProfileUpdate,
 } from './types';
 
 const api = axios.create({
@@ -41,7 +46,8 @@ export const outreachApi = {
 };
 
 export const statsApi = {
-  get: () => api.get<Stats>('/stats').then(r => r.data),
+  get: (profileId?: number) =>
+    api.get<IpeStats & Stats>('/stats', { params: profileId ? { profileId } : undefined }).then(r => r.data),
 };
 
 export const scrapeApi = {
@@ -57,4 +63,41 @@ export const companiesApi = {
   update: (id: number, data: Partial<Company>) =>
     api.patch(`/companies/${id}`, data).then(r => r.data),
   remove: (id: number) => api.delete(`/companies/${id}`).then(r => r.data),
+};
+
+/* ── IPE: Documents ── */
+
+export const documentsApi = {
+  list: () => api.get<Document[]>('/documents').then(r => r.data),
+  upload: (file: File, type: 'resume' | 'linkedin') => {
+    const form = new FormData();
+    form.append('file', file);
+    form.append('type', type);
+    return api.post<Document>('/documents/upload', form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }).then(r => r.data);
+  },
+  remove: (id: number) => api.delete(`/documents/${id}`).then(r => r.data),
+};
+
+/* ── IPE: Profiles ── */
+
+export const profilesApi = {
+  list: () => api.get<Profile[]>('/profiles').then(r => r.data),
+  get: (id: number) => api.get<Profile>(`/profiles/${id}`).then(r => r.data),
+  create: (data: ProfileCreate) => api.post<Profile>('/profiles', data).then(r => r.data),
+  update: (id: number, data: ProfileUpdate) => api.patch<Profile>(`/profiles/${id}`, data).then(r => r.data),
+  remove: (id: number) => api.delete(`/profiles/${id}`).then(r => r.data),
+  autoPopulate: (id: number) => api.post<Profile>(`/profiles/${id}/auto-populate`).then(r => r.data),
+};
+
+/* ── IPE: Scoring ── */
+
+export const scoreApi = {
+  runIpe: (profileId: number) => api.post(`/score/ipe/${profileId}`).then(r => r.data),
+  runAi: (profileId: number) => api.post(`/score/ai/${profileId}`).then(r => r.data),
+  runAll: async (profileId: number) => {
+    await api.post(`/score/ipe/${profileId}`);
+    return api.post(`/score/ai/${profileId}`).then(r => r.data);
+  },
 };

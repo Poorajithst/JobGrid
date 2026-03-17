@@ -1,20 +1,24 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { JobWithOutreach } from '../api/types';
 import { Pipeline } from './Pipeline';
-import { outreachApi } from '../api/client';
+import { ScoreBreakdown } from './ScoreBreakdown';
+import { outreachApi, scoreApi } from '../api/client';
 
 interface DetailPanelProps {
   job: JobWithOutreach;
   onStatusChange: (status: string) => void;
   onNotesChange: (notes: string) => void;
+  activeProfileId?: number | null;
+  onRefresh?: () => void;
 }
 
-export function DetailPanel({ job, onStatusChange, onNotesChange }: DetailPanelProps) {
+export function DetailPanel({ job, onStatusChange, onNotesChange, activeProfileId, onRefresh }: DetailPanelProps) {
   const [showFullDesc, setShowFullDesc] = useState(false);
   const [outreachLoading, setOutreachLoading] = useState<string | null>(null);
   const [outreachContent, setOutreachContent] = useState<string | null>(null);
   const [editingNotes, setEditingNotes] = useState(false);
   const [notesText, setNotesText] = useState(job.notes || '');
+  const [aiValidating, setAiValidating] = useState(false);
 
   // Sync notes state when job changes
   useEffect(() => {
@@ -36,10 +40,26 @@ export function DetailPanel({ job, onStatusChange, onNotesChange }: DetailPanelP
     }
   };
 
+  const handleAiValidate = useCallback(async () => {
+    if (!activeProfileId) return;
+    setAiValidating(true);
+    try {
+      await scoreApi.runAi(activeProfileId);
+      onRefresh?.();
+    } catch (err) {
+      console.error('AI validation failed:', err);
+    } finally {
+      setAiValidating(false);
+    }
+  }, [activeProfileId, onRefresh]);
+
   const saveNotes = () => {
     onNotesChange(notesText);
     setEditingNotes(false);
   };
+
+  const scores = job.job_scores;
+  const displayScore = scores?.ipe_score ?? job.fit_score;
 
   return (
     <div className="flex-1 bg-gradient-to-b from-bg-secondary to-bg-primary overflow-y-auto p-6 px-7 scrollbar-thin scrollbar-thumb-bg-card">
@@ -51,7 +71,7 @@ export function DetailPanel({ job, onStatusChange, onNotesChange }: DetailPanelP
             {job.company} <span className="text-text-dim mx-1.5">&middot;</span> {job.location || 'N/A'}
           </div>
           <div className="text-[11px] text-[#334155] mt-1">
-            {job.posted_at ? `Posted ${job.posted_at}` : ''} {job.applicants ? `· ${job.applicants} applicants` : ''}
+            {job.posted_at ? `Posted ${job.posted_at}` : ''} {job.applicants ? `\u00b7 ${job.applicants} applicants` : ''}
           </div>
         </div>
         <a
@@ -64,13 +84,62 @@ export function DetailPanel({ job, onStatusChange, onNotesChange }: DetailPanelP
         </a>
       </div>
 
-      {/* Metrics */}
+      {/* Metrics row */}
       <div className="grid grid-cols-4 gap-3 mb-5">
-        <MetricCard label="Fit Score" value={String(job.fit_score ?? '—')} color="indigo" large />
-        <MetricCard label="Competition" value={job.competition ?? '—'} color="green" />
-        <MetricCard label="Recommendation" value={job.recommendation ?? '—'} color="amber" />
+        <MetricCard label={scores?.ipe_score != null ? 'IPE Score' : 'Fit Score'} value={String(displayScore ?? '\u2014')} color="indigo" large />
+        <MetricCard label="Competition" value={job.competition ?? '\u2014'} color="green" />
+        <MetricCard label="Recommendation" value={job.recommendation ?? '\u2014'} color="amber" />
         <MetricCard label="Source" value={job.source === 'google-jobs' ? 'Google' : job.source} color="cyan" />
       </div>
+
+      {/* IPE Score Breakdown */}
+      {scores && scores.ipe_score != null && (
+        <div className="mb-3">
+          <ScoreBreakdown scores={scores} />
+        </div>
+      )}
+
+      {/* AI Validation section */}
+      {scores?.ai_validated && (
+        <div className="bg-gradient-to-br from-[#0f172a]/70 to-[#0f172a]/30 border border-accent-purple/20 rounded-xl p-4 px-[18px] mb-3">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="text-[9px] font-bold uppercase tracking-[1.2px] text-text-dim">AI Validation</div>
+            <span className={`px-2 py-0.5 rounded text-[10px] font-semibold border ${scores.ai_agrees ? 'bg-accent-green/10 text-accent-green-light border-accent-green/20' : 'bg-accent-red/10 text-accent-red-light border-accent-red/20'}`}>
+              {scores.ai_agrees ? 'Agrees' : 'Disagrees'}
+            </span>
+          </div>
+          {scores.ai_pitch && (
+            <div className="text-[13px] text-accent-indigo-light leading-relaxed italic mb-2">
+              &ldquo;{scores.ai_pitch}&rdquo;
+            </div>
+          )}
+          {scores.ai_flags && scores.ai_flags.length > 0 && (
+            <div>
+              <div className="text-[9px] font-semibold uppercase tracking-widest text-text-dim mb-1">Flags</div>
+              <div className="flex flex-wrap gap-1.5">
+                {scores.ai_flags.map((flag) => (
+                  <span key={flag} className="px-2 py-0.5 rounded text-[10px] font-medium bg-accent-amber/10 text-accent-amber-light border border-accent-amber/20">
+                    {flag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Validate with AI button */}
+      {activeProfileId && scores?.ipe_score != null && !scores.ai_validated && (
+        <div className="mb-3">
+          <button
+            onClick={handleAiValidate}
+            disabled={aiValidating}
+            className="w-full py-2.5 rounded-[10px] text-xs font-semibold bg-gradient-to-br from-accent-purple to-[#7c3aed] text-white shadow-[0_2px_12px_rgba(168,85,247,0.25)] hover:shadow-[0_4px_20px_rgba(168,85,247,0.35)] hover:-translate-y-0.5 transition-all disabled:opacity-50"
+          >
+            {aiValidating ? 'Validating...' : 'Validate with AI'}
+          </button>
+        </div>
+      )}
 
       {/* Score Reason */}
       {job.score_reason && (

@@ -21,6 +21,7 @@ export interface Job {
   applied_at: string | null;
   interview_at: string | null;
   offer_at: string | null;
+  job_scores?: JobScore | null;
 }
 
 export interface JobWithOutreach extends Job {
@@ -84,4 +85,68 @@ export interface JobFilters {
   order?: 'asc' | 'desc';
   page?: number;
   limit?: number;
+  profileId?: number;
+}
+
+/* ── IPE: Documents ── */
+
+export interface Document {
+  id: number;
+  type: 'resume' | 'linkedin';
+  filename: string;
+  parsed_skills: string[] | null;
+  parsed_titles: string[] | null;
+  parsed_certs: string[] | null;
+  parsed_locations: string[] | null;
+  uploaded_at: string;
+}
+
+/* ── IPE: Profiles ── */
+
+export interface Profile {
+  id: number;
+  name: string;
+  target_titles: string;
+  target_skills: string;
+  target_certs: string;
+  target_locations: string;
+  weight_title: number;
+  weight_skill: number;
+  weight_location: number;
+  weight_experience: number;
+  weight_education: number;
+  weight_cert: number;
+  weight_freshness: number;
+  ai_threshold: number;
+  is_active: boolean;
+}
+
+export type ProfileCreate = Omit<Profile, 'id'>;
+export type ProfileUpdate = Partial<ProfileCreate>;
+
+/* ── IPE: Job Scores ── */
+
+export interface JobScore {
+  ipe_score: number | null;
+  title_score: number | null;
+  skill_score: number | null;
+  location_score: number | null;
+  experience_score: number | null;
+  education_score: number | null;
+  cert_score: number | null;
+  freshness_score: number | null;
+  matched_skills: string[] | null;
+  ai_validated: boolean;
+  ai_agrees: boolean | null;
+  ai_pitch: string | null;
+  ai_flags: string[] | null;
+}
+
+/* ── IPE: Stats extension ── */
+
+export interface IpeStats extends Stats {
+  avgIpeScore: number;
+  scoredCount: number;
+  aiValidatedCount: number;
+  topScoredCount: number;
 }
