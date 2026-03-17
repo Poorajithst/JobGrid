@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { jobsApi } from '../api/client';
-import type { Job, JobFilters, JobsResponse } from '../api/types';
+import type { JobFilters, JobsResponse } from '../api/types';
 
 export function useJobs(filters: JobFilters = {}) {
   const [data, setData] = useState<JobsResponse | null>(null);

@@ -1,4 +1,3 @@
-import { useState, useMemo } from 'react';
 import { JobCard } from './JobCard';
 import type { Job, JobFilters } from '../api/types';
 
