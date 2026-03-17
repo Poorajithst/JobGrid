@@ -143,6 +143,7 @@ export interface JobScore {
   ai_agrees: boolean | null;
   ai_pitch: string | null;
   ai_flags: string[] | null;
+  ai_fit_assessment: string | null;
 }
 
 /* ── IPE: Stats extension ── */

@@ -1,8 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
-import type { JobWithOutreach } from '../api/types';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import type { JobWithOutreach, Profile } from '../api/types';
 import { Pipeline } from './Pipeline';
 import { ScoreBreakdown } from './ScoreBreakdown';
-import { outreachApi, scoreApi } from '../api/client';
+import { outreachApi, scoreApi, enrichApi, profilesApi } from '../api/client';
 
 interface DetailPanelProps {
   job: JobWithOutreach;
@@ -19,6 +19,17 @@ export function DetailPanel({ job, onStatusChange, onNotesChange, activeProfileI
   const [editingNotes, setEditingNotes] = useState(false);
   const [notesText, setNotesText] = useState(job.notes || '');
   const [aiValidating, setAiValidating] = useState(false);
+  const [enrichingJob, setEnrichingJob] = useState(false);
+  const [activeProfile, setActiveProfile] = useState<Profile | null>(null);
+
+  // Fetch active profile for keyword highlighting
+  useEffect(() => {
+    if (activeProfileId) {
+      profilesApi.get(activeProfileId).then(setActiveProfile).catch(() => setActiveProfile(null));
+    } else {
+      setActiveProfile(null);
+    }
+  }, [activeProfileId]);
 
   // Sync notes state when job changes
   useEffect(() => {
@@ -40,18 +51,30 @@ export function DetailPanel({ job, onStatusChange, onNotesChange, activeProfileI
     }
   };
 
-  const handleAiValidate = useCallback(async () => {
+  const handleAiValidateSingle = useCallback(async () => {
     if (!activeProfileId) return;
     setAiValidating(true);
     try {
-      await scoreApi.runAi(activeProfileId);
+      await scoreApi.runAiSingle(activeProfileId, job.id);
       onRefresh?.();
     } catch (err) {
       console.error('AI validation failed:', err);
     } finally {
       setAiValidating(false);
     }
-  }, [activeProfileId, onRefresh]);
+  }, [activeProfileId, job.id, onRefresh]);
+
+  const handleEnrichJob = useCallback(async () => {
+    setEnrichingJob(true);
+    try {
+      await enrichApi.enrichJob(job.id);
+      onRefresh?.();
+    } catch (err) {
+      console.error('Enrich failed:', err);
+    } finally {
+      setEnrichingJob(false);
+    }
+  }, [job.id, onRefresh]);
 
   const saveNotes = () => {
     onNotesChange(notesText);
@@ -60,6 +83,86 @@ export function DetailPanel({ job, onStatusChange, onNotesChange, activeProfileI
 
   const scores = job.job_scores;
   const displayScore = scores?.ipe_score ?? job.fit_score;
+
+  // Build keyword sets for highlighting
+  const skillWords = useMemo(() => {
+    if (!activeProfile?.target_skills) return [] as string[];
+    return activeProfile.target_skills.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+  }, [activeProfile]);
+
+  const certWords = useMemo(() => {
+    if (!activeProfile?.target_certs) return [] as string[];
+    return activeProfile.target_certs.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+  }, [activeProfile]);
+
+  // Highlight matching keywords in description text
+  const highlightDescription = useCallback((text: string) => {
+    if (skillWords.length === 0 && certWords.length === 0) return text;
+
+    // Build a combined regex for all keywords
+    const allPatterns: { pattern: string; type: 'skill' | 'cert' }[] = [
+      ...skillWords.map(w => ({ pattern: w, type: 'skill' as const })),
+      ...certWords.map(w => ({ pattern: w, type: 'cert' as const })),
+    ];
+
+    if (allPatterns.length === 0) return text;
+
+    // Escape regex special chars
+    const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(
+      `\\b(${allPatterns.map(p => escape(p.pattern)).join('|')})\\b`,
+      'gi'
+    );
+
+    const parts: (string | { text: string; type: 'skill' | 'cert' })[] = [];
+    let lastIndex = 0;
+    let match;
+    while ((match = regex.exec(text)) !== null) {
+      if (match.index > lastIndex) {
+        parts.push(text.slice(lastIndex, match.index));
+      }
+      const matched = match[0].toLowerCase();
+      const type = certWords.includes(matched) ? 'cert' : 'skill';
+      parts.push({ text: match[0], type });
+      lastIndex = regex.lastIndex;
+    }
+    if (lastIndex < text.length) {
+      parts.push(text.slice(lastIndex));
+    }
+
+    return parts;
+  }, [skillWords, certWords]);
+
+  const descriptionContent = useMemo(() => {
+    if (!job.description) return null;
+    const text = showFullDesc ? job.description : job.description.slice(0, 500);
+    const highlighted = highlightDescription(text);
+
+    if (typeof highlighted === 'string') {
+      return <span>{highlighted}</span>;
+    }
+
+    return (
+      <>
+        {highlighted.map((part, i) => {
+          if (typeof part === 'string') return <span key={i}>{part}</span>;
+          if (part.type === 'cert') {
+            return (
+              <mark key={i} className="bg-accent-amber/20 text-accent-amber-light rounded px-0.5">
+                {part.text}
+              </mark>
+            );
+          }
+          return (
+            <mark key={i} className="bg-accent-indigo/20 text-accent-indigo-light rounded px-0.5">
+              {part.text}
+            </mark>
+          );
+        })}
+        {!showFullDesc && job.description.length > 500 && '...'}
+      </>
+    );
+  }, [job.description, showFullDesc, highlightDescription]);
 
   return (
     <div className="flex-1 bg-gradient-to-b from-bg-secondary to-bg-primary overflow-y-auto p-6 px-7 scrollbar-thin scrollbar-thumb-bg-card">
@@ -99,23 +202,28 @@ export function DetailPanel({ job, onStatusChange, onNotesChange, activeProfileI
         </div>
       )}
 
-      {/* AI Validation section */}
+      {/* AI Assessment section */}
       {scores?.ai_validated && (
         <div className="bg-gradient-to-br from-[#0f172a]/70 to-[#0f172a]/30 border border-accent-purple/20 rounded-xl p-4 px-[18px] mb-3">
           <div className="flex items-center gap-2 mb-2">
-            <div className="text-[9px] font-bold uppercase tracking-[1.2px] text-text-dim">AI Validation</div>
+            <div className="text-[9px] font-bold uppercase tracking-[1.2px] text-text-dim">AI Assessment</div>
             <span className={`px-2 py-0.5 rounded text-[10px] font-semibold border ${scores.ai_agrees ? 'bg-accent-green/10 text-accent-green-light border-accent-green/20' : 'bg-accent-red/10 text-accent-red-light border-accent-red/20'}`}>
               {scores.ai_agrees ? 'Agrees' : 'Disagrees'}
             </span>
           </div>
+          {scores.ai_fit_assessment && (
+            <div className="text-[13px] text-text-secondary leading-relaxed mb-2">
+              {scores.ai_fit_assessment}
+            </div>
+          )}
           {scores.ai_pitch && (
             <div className="text-[13px] text-accent-indigo-light leading-relaxed italic mb-2">
               &ldquo;{scores.ai_pitch}&rdquo;
             </div>
           )}
           {scores.ai_flags && scores.ai_flags.length > 0 && (
-            <div>
-              <div className="text-[9px] font-semibold uppercase tracking-widest text-text-dim mb-1">Flags</div>
+            <div className="bg-accent-amber/5 border border-accent-amber/15 rounded-lg p-3 mt-2">
+              <div className="text-[9px] font-semibold uppercase tracking-widest text-text-dim mb-1.5">Flags</div>
               <div className="flex flex-wrap gap-1.5">
                 {scores.ai_flags.map((flag) => (
                   <span key={flag} className="px-2 py-0.5 rounded text-[10px] font-medium bg-accent-amber/10 text-accent-amber-light border border-accent-amber/20">
@@ -132,7 +240,7 @@ export function DetailPanel({ job, onStatusChange, onNotesChange, activeProfileI
       {activeProfileId && scores?.ipe_score != null && !scores.ai_validated && (
         <div className="mb-3">
           <button
-            onClick={handleAiValidate}
+            onClick={handleAiValidateSingle}
             disabled={aiValidating}
             className="w-full py-2.5 rounded-[10px] text-xs font-semibold bg-gradient-to-br from-accent-purple to-[#7c3aed] text-white shadow-[0_2px_12px_rgba(168,85,247,0.25)] hover:shadow-[0_4px_20px_rgba(168,85,247,0.35)] hover:-translate-y-0.5 transition-all disabled:opacity-50"
           >
@@ -151,21 +259,35 @@ export function DetailPanel({ job, onStatusChange, onNotesChange, activeProfileI
         <SectionCard label="Outreach Hook" text={`"${job.pitch}"`} italic />
       )}
 
-      {/* Description */}
-      {job.description && (
+      {/* Description with keyword highlighting */}
+      {job.description ? (
         <div className="bg-gradient-to-br from-[#0f172a]/70 to-[#0f172a]/30 border border-border-subtle rounded-xl p-4 px-[18px] mb-3">
           <div className="text-[9px] font-bold uppercase tracking-[1.2px] text-text-dim mb-2">Job Description</div>
-          <div className={`text-xs text-text-muted leading-relaxed ${!showFullDesc ? 'max-h-20 overflow-hidden relative' : ''}`}>
-            {job.description}
-            {!showFullDesc && (
+          <div className={`text-xs text-text-muted leading-relaxed ${!showFullDesc && job.description.length > 500 ? 'relative' : ''}`}>
+            {descriptionContent}
+            {!showFullDesc && job.description.length > 500 && (
               <div className="absolute bottom-0 left-0 right-0 h-[30px] bg-gradient-to-t from-[#0a0f1e]/95 to-transparent" />
             )}
           </div>
+          {job.description.length > 500 && (
+            <button
+              onClick={() => setShowFullDesc(!showFullDesc)}
+              className="text-accent-indigo text-[11px] font-semibold mt-1 cursor-pointer"
+            >
+              {showFullDesc ? 'Show less' : 'Show more'}
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="bg-gradient-to-br from-[#0f172a]/70 to-[#0f172a]/30 border border-border-subtle rounded-xl p-4 px-[18px] mb-3">
+          <div className="text-[9px] font-bold uppercase tracking-[1.2px] text-text-dim mb-2">Job Description</div>
+          <div className="text-xs text-text-dim italic mb-2">No description available</div>
           <button
-            onClick={() => setShowFullDesc(!showFullDesc)}
-            className="text-accent-indigo text-[11px] font-semibold mt-1 cursor-pointer"
+            onClick={handleEnrichJob}
+            disabled={enrichingJob}
+            className="px-3 py-1.5 rounded-lg text-[10px] font-semibold bg-accent-cyan/10 text-accent-cyan-light border border-accent-cyan/20 hover:bg-accent-cyan/20 transition-all disabled:opacity-50"
           >
-            {showFullDesc ? 'Show less' : 'Show full description'}
+            {enrichingJob ? 'Fetching...' : 'Fetch Description'}
           </button>
         </div>
       )}
