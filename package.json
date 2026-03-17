@@ -1,0 +1,12 @@
+{
+  "name": "jobgrid",
+  "private": true,
+  "scripts": {
+    "dev:backend": "pnpm --filter @jobgrid/backend dev",
+    "dev:frontend": "pnpm --filter @jobgrid/frontend dev",
+    "dev": "pnpm run dev:backend & pnpm run dev:frontend",
+    "build": "pnpm --filter @jobgrid/frontend build",
+    "db:generate": "pnpm --filter @jobgrid/backend db:generate",
+    "db:migrate": "pnpm --filter @jobgrid/backend db:migrate"
+  }
+}
