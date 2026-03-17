@@ -1,6 +1,6 @@
-import { scrapeApi, profilesApi, scoreApi } from '../api/client';
+import { scrapeApi, profilesApi, scoreApi, enrichApi } from '../api/client';
 import type { Stats, IpeStats, Profile } from '../api/types';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 
 interface TopBarProps {
   stats: (Stats & Partial<IpeStats>) | null;
@@ -12,9 +12,22 @@ interface TopBarProps {
 
 export function TopBar({ stats, onScrapeComplete, activeProfileId, onProfileChange, userSwitcher }: TopBarProps) {
   const [scraping, setScraping] = useState(false);
-  const [scoring, setScoring] = useState(false);
-  const [validating, setValidating] = useState(false);
   const [profiles, setProfiles] = useState<Profile[]>([]);
+
+  // Enrichment state
+  const [enriching, setEnriching] = useState(false);
+  const [enrichProgress, setEnrichProgress] = useState<{ enriched: number; total: number } | null>(null);
+  const [enrichPending, setEnrichPending] = useState<number>(0);
+  const enrichPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Scoring state
+  const [scoring, setScoring] = useState(false);
+  const [scoreResult, setScoreResult] = useState<string | null>(null);
+  const [hasScored, setHasScored] = useState(false);
+
+  // AI validation state
+  const [validating, setValidating] = useState(false);
+  const [aiResult, setAiResult] = useState<string | null>(null);
 
   useEffect(() => {
     profilesApi.list().then(setProfiles).catch(() => {});
@@ -28,7 +41,43 @@ export function TopBar({ stats, onScrapeComplete, activeProfileId, onProfileChan
     }
   }, [profiles, activeProfileId, onProfileChange]);
 
-  const handleRunNow = useCallback(async () => {
+  // Poll enrichment status on mount to detect already-running enrichments
+  useEffect(() => {
+    enrichApi.status().then((s: any) => {
+      if (s.running) {
+        setEnriching(true);
+        startEnrichPoll();
+      } else {
+        setEnrichPending(s.pending ?? 0);
+      }
+    }).catch(() => {});
+    return () => {
+      if (enrichPollRef.current) clearInterval(enrichPollRef.current);
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const startEnrichPoll = useCallback(() => {
+    if (enrichPollRef.current) clearInterval(enrichPollRef.current);
+    enrichPollRef.current = setInterval(async () => {
+      try {
+        const s = await enrichApi.status();
+        if (s.running) {
+          setEnrichProgress({ enriched: s.enriched ?? 0, total: s.total ?? 0 });
+        } else {
+          setEnriching(false);
+          setEnrichProgress(null);
+          setEnrichPending(s.pending ?? 0);
+          if (enrichPollRef.current) clearInterval(enrichPollRef.current);
+          enrichPollRef.current = null;
+          onScrapeComplete(); // refresh data
+        }
+      } catch {
+        // ignore
+      }
+    }, 3000);
+  }, [onScrapeComplete]);
+
+  const handleScrape = useCallback(async () => {
     setScraping(true);
     try {
       const { runId } = await scrapeApi.trigger();
@@ -49,14 +98,29 @@ export function TopBar({ stats, onScrapeComplete, activeProfileId, onProfileChan
     }
   }, [onScrapeComplete]);
 
+  const handleEnrich = useCallback(async () => {
+    setEnriching(true);
+    setEnrichProgress(null);
+    try {
+      await enrichApi.trigger();
+      startEnrichPoll();
+    } catch {
+      setEnriching(false);
+    }
+  }, [startEnrichPoll]);
+
   const handleScore = useCallback(async () => {
     if (!activeProfileId) return;
     setScoring(true);
+    setScoreResult(null);
     try {
-      await scoreApi.runIpe(activeProfileId);
-      onScrapeComplete(); // refresh data
+      const result = await scoreApi.runIpe(activeProfileId);
+      const count = result?.scored ?? result?.matches ?? 0;
+      setScoreResult(`${count} matches`);
+      setHasScored(true);
+      onScrapeComplete();
     } catch {
-      /* ignore */
+      setScoreResult('Error');
     } finally {
       setScoring(false);
     }
@@ -65,15 +129,24 @@ export function TopBar({ stats, onScrapeComplete, activeProfileId, onProfileChan
   const handleAiValidate = useCallback(async () => {
     if (!activeProfileId) return;
     setValidating(true);
+    setAiResult(null);
     try {
-      await scoreApi.runAi(activeProfileId);
+      const result = await scoreApi.runAi(activeProfileId);
+      const count = result?.validated ?? result?.best ?? 0;
+      setAiResult(`${count} best`);
       onScrapeComplete();
     } catch {
-      /* ignore */
+      setAiResult('Error');
     } finally {
       setValidating(false);
     }
   }, [activeProfileId, onScrapeComplete]);
+
+  const enrichLabel = enriching
+    ? `Enriching... ${enrichProgress ? `(${enrichProgress.enriched}/${enrichProgress.total})` : ''}`
+    : enrichPending > 0
+      ? `Enrich (${enrichPending} pending)`
+      : 'Enrich JDs';
 
   return (
     <div className="bg-gradient-to-b from-[#0f1629] to-[#0c1120] border-b border-accent-indigo/15 px-6 py-3.5 flex justify-between items-center relative">
@@ -105,7 +178,7 @@ export function TopBar({ stats, onScrapeComplete, activeProfileId, onProfileChan
           <StatBadge color="cyan" value={stats?.aiValidatedCount ?? stats?.new_today ?? 0} label={stats?.aiValidatedCount !== undefined ? 'AI Validated' : 'New Today'} />
         </div>
       </div>
-      <div className="flex items-center gap-3.5">
+      <div className="flex items-center gap-3">
         <span className="text-text-dim text-xs">
           Last scraped{' '}
           <span className="text-text-muted">
@@ -114,31 +187,47 @@ export function TopBar({ stats, onScrapeComplete, activeProfileId, onProfileChan
               : 'never'}
           </span>
         </span>
-        {activeProfileId && (
-          <>
-            <button
-              onClick={handleScore}
-              disabled={scoring}
-              className="bg-gradient-to-br from-accent-green to-[#059669] text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold shadow-[0_2px_8px_rgba(16,185,129,0.3)] hover:shadow-[0_4px_16px_rgba(16,185,129,0.4)] hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {scoring ? 'Scoring...' : 'Score Now'}
-            </button>
-            <button
-              onClick={handleAiValidate}
-              disabled={validating}
-              className="bg-gradient-to-br from-accent-purple to-[#7c3aed] text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold shadow-[0_2px_8px_rgba(168,85,247,0.3)] hover:shadow-[0_4px_16px_rgba(168,85,247,0.4)] hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {validating ? 'Validating...' : 'AI Validate'}
-            </button>
-          </>
-        )}
+
+        {/* 1. Scrape button */}
         <button
-          onClick={handleRunNow}
+          onClick={handleScrape}
           disabled={scraping}
-          className="bg-gradient-to-br from-accent-indigo to-[#4f46e5] text-white px-4 py-1.5 rounded-lg text-xs font-semibold shadow-[0_2px_8px_rgba(99,102,241,0.3)] hover:shadow-[0_4px_16px_rgba(99,102,241,0.4)] hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          className="bg-gradient-to-br from-accent-indigo to-[#4f46e5] text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold shadow-[0_2px_8px_rgba(99,102,241,0.3)] hover:shadow-[0_4px_16px_rgba(99,102,241,0.4)] hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {scraping ? 'Running...' : 'Run Now'}
+          {scraping ? 'Scraping...' : 'Scrape'}
         </button>
+
+        {/* 2. Enrich JDs button */}
+        <button
+          onClick={handleEnrich}
+          disabled={enriching}
+          className="bg-gradient-to-br from-accent-cyan to-[#0891b2] text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold shadow-[0_2px_8px_rgba(6,182,212,0.3)] hover:shadow-[0_4px_16px_rgba(6,182,212,0.4)] hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {enrichLabel}
+        </button>
+
+        {/* 3. Analytic Score button */}
+        {activeProfileId && (
+          <button
+            onClick={handleScore}
+            disabled={scoring}
+            className="bg-gradient-to-br from-accent-green to-[#059669] text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold shadow-[0_2px_8px_rgba(16,185,129,0.3)] hover:shadow-[0_4px_16px_rgba(16,185,129,0.4)] hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {scoring ? 'Scoring...' : scoreResult ?? 'Analytic Score'}
+          </button>
+        )}
+
+        {/* 4. AI Score button */}
+        {activeProfileId && (
+          <button
+            onClick={handleAiValidate}
+            disabled={validating || !hasScored}
+            title={!hasScored ? 'Run Analytic Score first' : undefined}
+            className="bg-gradient-to-br from-accent-purple to-[#7c3aed] text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold shadow-[0_2px_8px_rgba(168,85,247,0.3)] hover:shadow-[0_4px_16px_rgba(168,85,247,0.4)] hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {validating ? 'Validating...' : aiResult ?? 'AI Score'}
+          </button>
+        )}
       </div>
     </div>
   );

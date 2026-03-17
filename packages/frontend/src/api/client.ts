@@ -116,8 +116,17 @@ export const profilesApi = {
 export const scoreApi = {
   runIpe: (profileId: number) => api.post(`/score/ipe/${profileId}`).then(r => r.data),
   runAi: (profileId: number) => api.post(`/score/ai/${profileId}`).then(r => r.data),
+  runAiSingle: (profileId: number, jobId: number) => api.post(`/score/ai/${profileId}/${jobId}`).then(r => r.data),
   runAll: async (profileId: number) => {
     await api.post(`/score/ipe/${profileId}`);
     return api.post(`/score/ai/${profileId}`).then(r => r.data);
   },
+};
+
+/* ── Enrichment ── */
+
+export const enrichApi = {
+  trigger: () => api.post('/enrich').then(r => r.data),
+  status: () => api.get('/enrich/status').then(r => r.data),
+  enrichJob: (jobId: number) => api.post(`/enrich/${jobId}`).then(r => r.data),
 };
