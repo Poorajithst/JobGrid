@@ -114,7 +114,7 @@ export const profilesApi = {
 /* ── IPE: Scoring ── */
 
 export const scoreApi = {
-  runIpe: (profileId: number) => api.post(`/score/ipe/${profileId}`).then(r => r.data),
+  runIpe: (profileId: number, force = false) => api.post(`/score/ipe/${profileId}${force ? '?force=true' : ''}`).then(r => r.data),
   runAi: (profileId: number) => api.post(`/score/ai/${profileId}`).then(r => r.data),
   runAiSingle: (profileId: number, jobId: number) => api.post(`/score/ai/${profileId}/${jobId}`).then(r => r.data),
   runAll: async (profileId: number) => {

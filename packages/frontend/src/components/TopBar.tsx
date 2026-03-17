@@ -36,7 +36,7 @@ export function TopBar({ stats, onScrapeComplete, activeProfileId, onProfileChan
   // Auto-select active profile on first load
   useEffect(() => {
     if (activeProfileId === null && profiles.length > 0) {
-      const active = profiles.find((p) => p.is_active);
+      const active = profiles.find((p) => p.isActive);
       if (active) onProfileChange(active.id);
     }
   }, [profiles, activeProfileId, onProfileChange]);
@@ -114,9 +114,12 @@ export function TopBar({ stats, onScrapeComplete, activeProfileId, onProfileChan
     setScoring(true);
     setScoreResult(null);
     try {
-      const result = await scoreApi.runIpe(activeProfileId);
-      const count = result?.scored ?? result?.matches ?? 0;
-      setScoreResult(`${count} matches`);
+      // Force re-score all jobs (descriptions may have been enriched since last score)
+      await scoreApi.runIpe(activeProfileId, true);
+      // Refresh stats to get the actual scored count
+      onScrapeComplete();
+      // Show stats-based match count (scoredCount from the profile-scoped stats)
+      setScoreResult('Scored');
       setHasScored(true);
       onScrapeComplete();
     } catch {
@@ -166,7 +169,7 @@ export function TopBar({ stats, onScrapeComplete, activeProfileId, onProfileChan
           <option value="">No profile</option>
           {profiles.map((p) => (
             <option key={p.id} value={p.id}>
-              {p.name} {p.is_active ? '(active)' : ''}
+              {p.name} {p.isActive ? '(active)' : ''}
             </option>
           ))}
         </select>
