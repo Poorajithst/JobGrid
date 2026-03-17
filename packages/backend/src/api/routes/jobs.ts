@@ -20,11 +20,33 @@ export function createJobsRouter(queries: ReturnType<typeof createQueries>) {
       orderDir: (req.query.order as 'asc' | 'desc') || 'desc',
     };
 
+    const profileId = req.query.profileId ? parseInt(req.query.profileId as string, 10) : undefined;
+
     // Get all matching jobs for count, then apply pagination
     const allJobs = queries.getJobs(filters);
-    const total = allJobs.length;
+
+    // If profileId is set, merge IPE score data and sort by ipeScore desc
+    let enrichedJobs = allJobs.map(job => {
+      if (!profileId) return job;
+      const score = queries.getJobScore(job.id, profileId);
+      return {
+        ...job,
+        ipeScore: score?.ipeScore ?? null,
+        matchedSkills: score?.matchedSkills ? JSON.parse(score.matchedSkills) : null,
+        aiValidated: score?.aiValidated ?? null,
+        aiPitch: score?.aiPitch ?? null,
+        aiFlags: score?.aiFlags ? JSON.parse(score.aiFlags) : null,
+      };
+    });
+
+    if (profileId && filters.orderBy === 'scrapedAt' && filters.orderDir === 'desc') {
+      // Default sort when profileId is set: ipeScore desc
+      enrichedJobs.sort((a: any, b: any) => ((b.ipeScore ?? -1) - (a.ipeScore ?? -1)));
+    }
+
+    const total = enrichedJobs.length;
     const totalPages = Math.ceil(total / limit);
-    const paginatedJobs = allJobs.slice(offset, offset + limit);
+    const paginatedJobs = enrichedJobs.slice(offset, offset + limit);
 
     res.json({
       jobs: paginatedJobs,

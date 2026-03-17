@@ -3,9 +3,12 @@ import { extractTextFromPdf } from '../parser.js';
 
 // Mock pdf-parse
 vi.mock('pdf-parse', () => ({
-  default: vi.fn().mockResolvedValue({
-    text: 'John Doe\nProject Manager\nExperience\nWPI - Project Manager\nJan 2020 - Present\nSkills: Agile, Scrum, Python, SQL\nCertifications: CAPM, PMI-ACP',
-  }),
+  PDFParse: vi.fn().mockImplementation(() => ({
+    getText: vi.fn().mockResolvedValue({
+      text: 'John Doe\nProject Manager\nExperience\nWPI - Project Manager\nJan 2020 - Present\nSkills: Agile, Scrum, Python, SQL\nCertifications: CAPM, PMI-ACP',
+    }),
+    destroy: vi.fn().mockResolvedValue(undefined),
+  })),
 }));
 
 describe('PDF Parser', () => {

@@ -8,6 +8,9 @@ import { createStatsRouter } from './routes/stats.js';
 import { createScrapeRouter } from './routes/scrape.js';
 import { createOutreachRouter } from './routes/outreach.js';
 import { createCompaniesRouter } from './routes/companies.js';
+import { createDocumentsRouter } from './routes/documents.js';
+import { createProfilesRouter } from './routes/profiles.js';
+import { createScoreRouter } from './routes/score.js';
 import { errorHandler } from './middleware/errors.js';
 import { runAllSources } from '../sources/index.js';
 import { scoreJobs } from '../scorer/index.js';
@@ -112,6 +115,9 @@ app.use('/api/stats', createStatsRouter(queries));
 app.use('/api/scrape', createScrapeRouter(queries, triggerScrape));
 app.use('/api/outreach', createOutreachRouter(queries));
 app.use('/api/companies', createCompaniesRouter(queries));
+app.use('/api/documents', createDocumentsRouter(queries));
+app.use('/api/profiles', createProfilesRouter(queries));
+app.use('/api/score', createScoreRouter(queries));
 
 app.use(errorHandler);
 
