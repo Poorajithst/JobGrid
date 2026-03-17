@@ -1,0 +1,41 @@
+{
+  "methodologies": [
+    "agile", "scrum", "kanban", "waterfall", "safe", "lean", "six sigma",
+    "prince2", "pmbok", "hybrid", "devops", "ci/cd", "sdlc", "itil",
+    "design thinking", "rapid prototyping", "mvp"
+  ],
+  "tools": [
+    "jira", "asana", "monday.com", "ms project", "microsoft project",
+    "power bi", "tableau", "confluence", "trello", "smartsheet",
+    "servicenow", "azure devops", "github", "gitlab", "bitbucket",
+    "slack", "teams", "zoom", "miro", "figma", "notion",
+    "salesforce", "hubspot", "zendesk"
+  ],
+  "technical": [
+    "python", "sql", "javascript", "typescript", "java", "c#", "go", "rust",
+    "aws", "azure", "gcp", "docker", "kubernetes", "terraform", "ansible",
+    "react", "node.js", "express", "rest api", "graphql", "microservices",
+    "machine learning", "ai", "data science", "etl", "data pipeline",
+    "postgresql", "mysql", "mongodb", "redis", "elasticsearch"
+  ],
+  "certifications": [
+    "pmp", "capm", "pmi-acp", "safe", "csm", "psm", "itil",
+    "prince2", "aws certified", "azure certified", "gcp certified",
+    "cissp", "cism", "comptia security+", "iso 27001",
+    "six sigma green belt", "six sigma black belt"
+  ],
+  "domains": [
+    "infrastructure", "cybersecurity", "security", "ai/ml", "artificial intelligence",
+    "data center", "healthcare", "fintech", "banking", "insurance",
+    "higher education", "government", "defense", "manufacturing",
+    "telecommunications", "e-commerce", "retail", "supply chain",
+    "cloud migration", "digital transformation", "erp", "crm"
+  ],
+  "soft_skills": [
+    "leadership", "stakeholder management", "executive reporting",
+    "vendor coordination", "cross-functional", "communication",
+    "strategic planning", "risk management", "budget management",
+    "team building", "mentoring", "conflict resolution",
+    "change management", "presentation", "negotiation"
+  ]
+}
