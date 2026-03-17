@@ -17,6 +17,17 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api',
 });
 
+/* ── Active user tracking ── */
+
+let activeUserId: number | null = null;
+export function setActiveUserId(id: number) { activeUserId = id; }
+export function getActiveUserId() { return activeUserId; }
+
+api.interceptors.request.use((config) => {
+  if (activeUserId) config.headers['X-User-Id'] = String(activeUserId);
+  return config;
+});
+
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -25,6 +36,15 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+/* ── Users ── */
+
+export const usersApi = {
+  list: () => api.get('/users').then(r => r.data),
+  create: (data: { name: string; avatarColor?: string }) => api.post('/users', data).then(r => r.data),
+  update: (id: number, data: any) => api.patch(`/users/${id}`, data).then(r => r.data),
+  remove: (id: number) => api.delete(`/users/${id}`).then(r => r.data),
+};
 
 export const jobsApi = {
   list: (filters: JobFilters = {}) =>

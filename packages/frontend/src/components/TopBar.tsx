@@ -7,9 +7,10 @@ interface TopBarProps {
   onScrapeComplete: () => void;
   activeProfileId: number | null;
   onProfileChange: (id: number | null) => void;
+  userSwitcher?: React.ReactNode;
 }
 
-export function TopBar({ stats, onScrapeComplete, activeProfileId, onProfileChange }: TopBarProps) {
+export function TopBar({ stats, onScrapeComplete, activeProfileId, onProfileChange, userSwitcher }: TopBarProps) {
   const [scraping, setScraping] = useState(false);
   const [scoring, setScoring] = useState(false);
   const [validating, setValidating] = useState(false);
@@ -78,6 +79,7 @@ export function TopBar({ stats, onScrapeComplete, activeProfileId, onProfileChan
     <div className="bg-gradient-to-b from-[#0f1629] to-[#0c1120] border-b border-accent-indigo/15 px-6 py-3.5 flex justify-between items-center relative">
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent-indigo/40 to-transparent" />
       <div className="flex items-center gap-5">
+        {userSwitcher}
         <span className="text-lg font-extrabold tracking-tight bg-gradient-to-br from-accent-indigo-light to-accent-indigo bg-clip-text text-transparent">
           JobGrid
         </span>
