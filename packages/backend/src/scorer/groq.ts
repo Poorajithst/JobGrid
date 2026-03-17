@@ -1,14 +1,20 @@
 import Groq from 'groq-sdk';
 import { buildScoringPrompt, ScoreResponseSchema, type ScoreResponse } from './prompts.js';
 
-const client = new Groq({ apiKey: process.env.GROQ_API_KEY });
+let _client: Groq | null = null;
+function getClient(): Groq {
+  if (!_client) {
+    _client = new Groq({ apiKey: process.env.GROQ_API_KEY || 'missing' });
+  }
+  return _client;
+}
 
 const MAX_RETRIES = 3;
 const BACKOFF_BASE_MS = 2000;
 
 async function callWithRetry(prompt: string, retries = 0): Promise<string | null> {
   try {
-    const response = await client.chat.completions.create({
+    const response = await getClient().chat.completions.create({
       model: 'llama-3.3-70b-versatile',
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.2,
