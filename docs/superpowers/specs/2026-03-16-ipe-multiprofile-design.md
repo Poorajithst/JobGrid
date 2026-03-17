@@ -45,19 +45,22 @@ Based on research: applications within 24h get 32% higher callback rates, droppi
 | < 7 days | 25 |
 | < 14 days | 10 |
 | ≥ 14 days | 0 |
+| Unknown (null `posted_at`) | 40 (neutral — penalized slightly since we can't confirm recency) |
 
-Formula: exponential decay from posting date.
+Formula: exponential decay from posting date. Null posted_at gets a neutral-low score since freshness cannot be confirmed.
 
 ### 2. Skill Match Score (default weight: 25%)
 
-TF-IDF cosine similarity between the search profile's skills/experience text and the job description.
+Keyword overlap ratio (Jaccard similarity) between the search profile's skills/tools/terms and the job description tokens. Simpler and more interpretable than full TF-IDF for this use case.
 
-- Build TF-IDF vectors from profile text and job description
-- Cosine similarity = score (0.0 to 1.0 → mapped to 0-100)
-- Uses `natural` npm package for tokenization, stemming, TF-IDF
+- Tokenize job description: lowercase, remove stopwords, stem words using `natural` stemmer
+- Extract matching terms: profile skills that appear in the tokenized job description
+- Score = (matched terms / total profile terms) × 100
+- Bonus: +10 for each exact tool/platform match (e.g., "Jira", "Power BI" found verbatim)
+- Uses `natural` npm package for tokenization and stemming only (not TF-IDF corpus)
 - Includes both hard skills (tools, technologies) and domain terms (infrastructure, security, data center)
 
-A 75%+ match rate passes most ATS filters per research.
+A 75%+ match rate passes most ATS filters per research. Jaccard similarity avoids the corpus dependency of TF-IDF — each job is scored independently against the profile without needing to rebuild a model.
 
 ### 3. Title Alignment Score (default weight: 15%)
 
@@ -130,7 +133,7 @@ IPE = (freshness × w1) + (skill_match × w2) + (title_align × w3) +
       (experience × w7)
 ```
 
-Where w1-w7 are customizable per profile (default weights above). Weights must sum to 1.0.
+Where w1-w7 are customizable per profile (default weights above). Weights must sum to 1.0. Enforced at the API layer via Zod validation on profile create/update. The frontend weight sliders auto-normalize: when one slider moves, others adjust proportionally to maintain sum = 1.0.
 
 ### AI Validation Threshold
 
@@ -158,7 +161,7 @@ PDF file
         - Skills: match against curated dictionary (~300 terms)
         - Titles: extract job titles from experience entries
         - Certs: regex for known cert patterns
-        - Experience years: parse date ranges, calculate total
+        - Experience years: parse date ranges (regex for "Jan 2020 - Present", "2018-2022", etc.), convert "Present" to current date, sum non-overlapping months, round to years. Overlapping ranges (concurrent jobs) counted once.
         - Locations: extract city/state from entries
         - Industries: match against industry keyword list
         - Tools: match against tool/platform dictionary
@@ -374,7 +377,11 @@ profile.search_queries = [
 ]
 ```
 
-Each profile defines its own search queries. When a scrape runs, it uses the active profile's queries for Indeed, Google Jobs, and ZipRecruiter. Greenhouse/Lever API sources still scrape all companies regardless of profile (since they return all jobs, filtering happens at the scoring stage).
+Each profile defines its own search queries. When a scrape runs, it collects the **union of all active profiles' search queries** (deduplicated) for Indeed, Google Jobs, and ZipRecruiter. This way a single scrape covers all active searches without running redundant queries. Greenhouse/Lever API sources still scrape all companies regardless of profile (since they return all jobs, filtering happens at the scoring stage).
+
+**Nightly cron integration:** The 2am scheduler triggers: (1) scrape using union of all active profile queries, (2) IPE score new jobs against all active profiles, (3) AI validate top matches per profile (above each profile's `ai_threshold`).
+
+**Outreach integration:** The outreach generation prompt (`scorer/prompts.ts`) switches from the hardcoded `PM_PROFILE` to the active search profile's data. The `buildOutreachPrompt` function takes a profile object parameter instead of calling `profileToString()`.
 
 ## Migration Strategy
 
@@ -382,21 +389,23 @@ Since the existing `jobs` table has 564 jobs with scoring columns:
 
 1. Create new tables (`documents`, `profiles`, `job_scores`)
 2. Create a "Legacy PM" profile from the existing hardcoded profile data
-3. Migrate existing `fit_score`, `competition`, `recommendation`, `pitch`, `score_reason` from `jobs` into `job_scores` for the legacy profile
-4. Drop the old scoring columns from `jobs`
+3. Migrate existing scoring data from `jobs` into `job_scores` for the legacy profile. Map old text labels: `competition` "low"→85, "medium"→50, "high"→20. Map `fit_score` directly to `ipe_score`. Set `ai_validated=1`, `ai_agrees=1`, `ai_pitch=pitch`, for jobs that had Groq scores. Set all individual dimension scores to 0 (legacy data, will be overwritten on re-score).
+4. Drop the old scoring columns from `jobs` (`fit_score`, `competition`, `recommendation`, `pitch`, `score_reason`)
 5. Re-score all 564 jobs with the IPE engine against the new profile
 
 ## Build Order
 
-1. **PDF parsing + document storage** — upload, extract, store, review
-2. **Profile CRUD** — create/edit/delete profiles, auto-populate from documents
-3. **IPE scoring engine** — the 7-dimension scorer with TF-IDF
-4. **Score Now endpoint** — trigger IPE scoring for a profile
-5. **AI validation endpoint** — send top matches to Groq
-6. **DB migration** — move scoring columns, create new tables
-7. **Frontend: document upload** — drag-drop, review extracted data
-8. **Frontend: profile manager** — CRUD, weight sliders, search queries
-9. **Frontend: score breakdown** — 7-bar chart in DetailPanel
-10. **Frontend: profile selector + score/validate buttons** — TopBar updates
-11. **Scraper integration** — dynamic search queries from active profile
-12. **Re-score existing jobs** — run IPE against all 564 jobs
+1. **DB migration — new tables** — create `documents`, `profiles`, `job_scores` tables. Do NOT drop old columns yet.
+2. **PDF parsing + document storage** — upload endpoint, pdf-parse extraction, structured profile builder, store in `documents`
+3. **Profile CRUD** — create/edit/delete profiles, auto-populate from documents, weight validation
+4. **IPE scoring engine** — the 7-dimension scorer with Jaccard similarity (using `natural` for tokenization/stemming)
+5. **Score Now endpoint** — trigger IPE scoring for all unscored jobs against a profile, store in `job_scores`
+6. **AI validation endpoint** — send top IPE matches to Groq, update `job_scores` with AI results
+7. **Data migration** — migrate existing `fit_score`/`competition`/`pitch` from `jobs` to `job_scores` for a "Legacy PM" profile, then drop old scoring columns from `jobs`
+8. **Scraper integration** — dynamic search queries from union of active profiles, update outreach prompts to use profile data
+9. **Cron integration** — update nightly scheduler to: scrape → IPE score all profiles → AI validate top per profile
+10. **Frontend: document upload** — drag-drop, review extracted data
+11. **Frontend: profile manager** — CRUD, weight sliders with auto-normalize, search queries editor
+12. **Frontend: score breakdown** — 7-bar dimension chart in DetailPanel, AI validation badge
+13. **Frontend: profile selector + score/validate buttons** — TopBar profile dropdown, Score Now, AI Validate Top
+14. **Re-score existing jobs** — run IPE against all 564 jobs with new profiles
