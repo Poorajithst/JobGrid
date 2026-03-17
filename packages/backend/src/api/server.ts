@@ -11,12 +11,18 @@ import { createCompaniesRouter } from './routes/companies.js';
 import { createDocumentsRouter } from './routes/documents.js';
 import { createProfilesRouter } from './routes/profiles.js';
 import { createScoreRouter } from './routes/score.js';
+import { createEnrichRouter } from './routes/enrich.js';
 import { errorHandler } from './middleware/errors.js';
 import { userContext } from './middleware/user-context.js';
 import { createUsersRouter } from './routes/users.js';
 import { runAllSources } from '../sources/index.js';
 import { scoreJobs } from '../scorer/index.js';
 import { calculateIpeScore, type ProfileConfig, type JobData } from '../ipe/index.js';
+import { isNull, eq } from 'drizzle-orm';
+import { jobs as jobsTable } from '../db/schema.js';
+import { fetchJobDescription } from '../sources/description-fetcher.js';
+import { getPage, closeBrowser } from '../browser/instance.js';
+import { randomDelay } from '../browser/delay.js';
 
 const PORT = parseInt(process.env.PORT || '3001', 10);
 const queries = createQueries(db);
@@ -156,6 +162,30 @@ async function triggerScrape() {
       }
     }
 
+    // Auto-trigger enrichment for jobs without descriptions (runs in background)
+    const nullDescJobs = db.select().from(jobsTable).where(isNull(jobsTable.description)).all();
+    if (nullDescJobs.length > 0) {
+      (async () => {
+        try {
+          const page = await getPage();
+          for (const job of nullDescJobs) {
+            try {
+              const desc = await fetchJobDescription(job.link, page);
+              if (desc) {
+                db.update(jobsTable).set({ description: desc }).where(eq(jobsTable.id, job.id)).run();
+              }
+            } catch { /* continue */ }
+            await randomDelay(1000, 2000);
+          }
+          await page.context().close();
+          await closeBrowser();
+          console.log(`Enrichment complete: processed ${nullDescJobs.length} jobs`);
+        } catch (err) {
+          console.error('Auto-enrichment failed:', err);
+        }
+      })();
+    }
+
     // Determine status: success if no errors, partial if some, failed if all
     const status = errors.length === 0 ? 'success'
       : errors.length < sourcesRun.length ? 'partial'
@@ -190,6 +220,7 @@ app.use('/api/companies', createCompaniesRouter(queries));
 app.use('/api/documents', createDocumentsRouter(queries));
 app.use('/api/profiles', createProfilesRouter(queries));
 app.use('/api/score', createScoreRouter(queries));
+app.use('/api/enrich', createEnrichRouter(queries, db));
 
 app.use(errorHandler);
 
