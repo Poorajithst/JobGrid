@@ -1,4 +1,44 @@
 {
+  "id": "pm-tpm",
+  "label": "Project/Program/Product Manager",
+  "weights": {
+    "freshness": 0.20,
+    "skill": 0.25,
+    "title": 0.25,
+    "cert": 0.05,
+    "competition": 0.10,
+    "location": 0.10,
+    "experience": 0.05
+  },
+  "defaultTitles": [
+    "Technical Project Manager",
+    "Technical Program Manager",
+    "Product Manager",
+    "Program Manager",
+    "IT Project Manager"
+  ],
+  "defaultSynonyms": {
+    "technical project manager": ["TPM", "IT Project Manager", "Technology PM", "Tech PM"],
+    "technical program manager": ["Program Manager Technical", "Sr Program Manager", "Senior Program Manager"],
+    "product manager": ["Product Owner", "Group Product Manager", "Associate Product Manager"],
+    "program manager": ["Programme Manager", "PgM"]
+  },
+  "defaultExcludes": [
+    "Account Manager",
+    "Sales Manager",
+    "Marketing Manager",
+    "Office Manager",
+    "Property Manager",
+    "Case Manager",
+    "Nurse Manager",
+    "Restaurant Manager",
+    "Store Manager",
+    "General Manager",
+    "Shift Manager",
+    "Branch Manager",
+    "Warehouse Manager",
+    "Operations Manager"
+  ],
   "methodologies": [
     "agile", "scrum", "kanban", "waterfall", "safe", "lean", "six sigma",
     "prince2", "pmbok", "hybrid", "devops", "ci/cd", "sdlc", "itil",

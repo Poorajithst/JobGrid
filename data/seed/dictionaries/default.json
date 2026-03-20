@@ -1,0 +1,34 @@
+{
+  "id": "default",
+  "label": "Custom / General",
+  "weights": {
+    "freshness": 0.25,
+    "skill": 0.25,
+    "title": 0.15,
+    "cert": 0.10,
+    "competition": 0.10,
+    "location": 0.10,
+    "experience": 0.05
+  },
+  "defaultTitles": [],
+  "defaultSynonyms": {},
+  "defaultExcludes": [],
+  "methodologies": [
+    "agile", "scrum", "kanban", "waterfall", "ci/cd", "devops"
+  ],
+  "tools": [
+    "jira", "confluence", "github", "slack", "teams", "notion"
+  ],
+  "technical": [
+    "python", "sql", "javascript", "aws", "docker", "rest api"
+  ],
+  "certifications": [
+    "pmp", "aws certified", "azure certified", "gcp certified", "cissp"
+  ],
+  "domains": [
+    "healthcare", "fintech", "e-commerce", "cloud migration", "digital transformation"
+  ],
+  "soft_skills": [
+    "leadership", "communication", "problem solving", "collaboration", "mentoring"
+  ]
+}

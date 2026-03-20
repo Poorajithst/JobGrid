@@ -1,0 +1,93 @@
+{
+  "id": "data-scientist",
+  "label": "Data Scientist / ML Engineer",
+  "weights": {
+    "freshness": 0.20,
+    "skill": 0.30,
+    "title": 0.15,
+    "cert": 0.05,
+    "competition": 0.10,
+    "location": 0.10,
+    "experience": 0.10
+  },
+  "defaultTitles": [
+    "Data Scientist",
+    "Machine Learning Engineer",
+    "ML Engineer",
+    "Data Analyst",
+    "AI Engineer"
+  ],
+  "defaultSynonyms": {
+    "data scientist": ["Senior Data Scientist", "Sr Data Scientist", "Applied Scientist", "Research Scientist"],
+    "machine learning engineer": ["ML Engineer", "MLE", "Applied ML Engineer", "Senior ML Engineer"],
+    "ml engineer": ["Machine Learning Engineer", "MLOps Engineer", "AI/ML Engineer"],
+    "data analyst": ["Business Analyst", "Analytics Engineer", "Insights Analyst", "Senior Data Analyst"],
+    "ai engineer": ["AI/ML Engineer", "Generative AI Engineer", "LLM Engineer", "Applied AI Engineer"]
+  },
+  "defaultExcludes": [
+    "Data Entry",
+    "Data Administrator",
+    "Database Administrator",
+    "DBA",
+    "Sales Analyst",
+    "Marketing Analyst",
+    "Financial Analyst",
+    "Business Intelligence Analyst",
+    "Systems Analyst"
+  ],
+  "methodologies": [
+    "agile", "scrum", "crisp-dm", "mlops", "a/b testing",
+    "experimental design", "hypothesis testing", "cross-validation",
+    "feature engineering", "model versioning", "data versioning",
+    "continuous training", "ci/cd for ml", "responsible ai"
+  ],
+  "tools": [
+    "jupyter", "jupyter lab", "google colab", "databricks",
+    "mlflow", "kubeflow", "airflow", "prefect", "dagster",
+    "dbt", "great expectations", "dvc",
+    "tableau", "power bi", "looker", "metabase",
+    "git", "github", "gitlab", "docker", "kubernetes",
+    "spark", "hadoop", "hive", "presto", "trino",
+    "weights & biases", "neptune.ai", "comet ml"
+  ],
+  "technical": [
+    "python", "r", "sql", "scala", "julia",
+    "pandas", "numpy", "scipy", "statsmodels",
+    "scikit-learn", "xgboost", "lightgbm", "catboost",
+    "tensorflow", "keras", "pytorch", "jax",
+    "hugging face", "transformers", "bert", "gpt", "llm",
+    "langchain", "llamaindex", "openai api", "anthropic api",
+    "rag", "vector databases", "pinecone", "weaviate", "chroma",
+    "aws sagemaker", "azure ml", "vertex ai", "google cloud ai",
+    "spark ml", "distributed training", "gpu computing", "cuda",
+    "data pipelines", "etl", "feature store", "model serving",
+    "fastapi", "flask", "streamlit", "gradio",
+    "postgresql", "mysql", "mongodb", "bigquery", "redshift", "snowflake"
+  ],
+  "certifications": [
+    "aws certified machine learning specialty",
+    "google professional machine learning engineer",
+    "azure ai engineer associate",
+    "databricks certified associate developer",
+    "tensorflow developer certificate",
+    "deeplearning.ai specialization",
+    "cloudera data scientist",
+    "sas certified advanced analytics professional"
+  ],
+  "domains": [
+    "natural language processing", "nlp", "computer vision", "cv",
+    "recommendation systems", "time series forecasting",
+    "anomaly detection", "fraud detection", "churn prediction",
+    "fintech", "healthcare", "biotech", "climate tech",
+    "autonomous systems", "robotics", "generative ai",
+    "ai safety", "explainable ai", "xai", "fairness in ml",
+    "reinforcement learning", "rl", "search and ranking"
+  ],
+  "soft_skills": [
+    "statistical thinking", "communication", "storytelling with data",
+    "stakeholder management", "problem formulation",
+    "research", "experimentation", "critical thinking",
+    "cross-functional collaboration", "business acumen",
+    "presentation", "technical writing", "curiosity"
+  ]
+}

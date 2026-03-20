@@ -1,0 +1,85 @@
+{
+  "id": "software-engineer",
+  "label": "Software Engineer",
+  "weights": {
+    "freshness": 0.20,
+    "skill": 0.30,
+    "title": 0.15,
+    "cert": 0.05,
+    "competition": 0.10,
+    "location": 0.10,
+    "experience": 0.10
+  },
+  "defaultTitles": [
+    "Software Engineer",
+    "Software Developer",
+    "Full Stack Engineer",
+    "Backend Engineer",
+    "Frontend Engineer"
+  ],
+  "defaultSynonyms": {
+    "software engineer": ["SWE", "Software Dev", "Application Engineer", "Application Developer"],
+    "software developer": ["Developer", "Application Developer", "Sr Software Developer", "Senior Software Developer"],
+    "full stack engineer": ["Full Stack Developer", "Full-Stack Engineer", "Full-Stack Developer"],
+    "backend engineer": ["Backend Developer", "Server-Side Engineer", "API Engineer", "Sr Backend Engineer"],
+    "frontend engineer": ["Frontend Developer", "UI Engineer", "UI Developer", "Front-End Developer", "Front-End Engineer"]
+  },
+  "defaultExcludes": [
+    "Sales Engineer",
+    "Support Engineer",
+    "Field Engineer",
+    "Solutions Engineer",
+    "Systems Engineer",
+    "Hardware Engineer",
+    "Network Engineer",
+    "Civil Engineer",
+    "Mechanical Engineer",
+    "Electrical Engineer",
+    "Chemical Engineer",
+    "Quality Engineer",
+    "Test Engineer"
+  ],
+  "methodologies": [
+    "agile", "scrum", "kanban", "tdd", "bdd", "xp", "pair programming",
+    "code review", "ci/cd", "devops", "gitflow", "trunk-based development",
+    "microservices", "monolith", "event-driven", "domain-driven design", "ddd"
+  ],
+  "tools": [
+    "git", "github", "gitlab", "bitbucket", "jira", "confluence",
+    "vs code", "intellij", "vim", "docker", "kubernetes", "helm",
+    "jenkins", "github actions", "circleci", "travis ci", "argocd",
+    "postman", "swagger", "datadog", "new relic", "sentry",
+    "sonarqube", "webpack", "vite", "npm", "yarn", "pnpm"
+  ],
+  "technical": [
+    "python", "javascript", "typescript", "java", "go", "rust", "c++", "c#",
+    "kotlin", "swift", "scala", "ruby", "php", "elixir",
+    "react", "next.js", "vue", "angular", "svelte", "tailwind css",
+    "node.js", "express", "fastapi", "django", "flask", "spring boot",
+    "rest api", "graphql", "grpc", "websockets", "oauth", "jwt",
+    "aws", "azure", "gcp", "terraform", "ansible", "pulumi",
+    "docker", "kubernetes", "serverless", "lambda", "cloud functions",
+    "postgresql", "mysql", "mongodb", "redis", "elasticsearch", "cassandra",
+    "kafka", "rabbitmq", "sqs", "pub/sub",
+    "machine learning", "llm", "openai api", "langchain"
+  ],
+  "certifications": [
+    "aws certified developer", "aws certified solutions architect",
+    "azure developer associate", "google associate cloud engineer",
+    "cka", "ckad", "certified kubernetes administrator",
+    "oracle java certified", "comptia security+", "google professional data engineer"
+  ],
+  "domains": [
+    "fintech", "healthtech", "e-commerce", "saas", "paas",
+    "cybersecurity", "ai/ml", "data engineering", "platform engineering",
+    "mobile development", "web development", "embedded systems",
+    "gaming", "adtech", "edtech", "blockchain", "web3",
+    "cloud native", "distributed systems", "real-time systems"
+  ],
+  "soft_skills": [
+    "problem solving", "communication", "collaboration", "code review",
+    "technical documentation", "mentoring", "debugging",
+    "system design", "architecture", "cross-functional",
+    "ownership", "autonomy", "continuous learning"
+  ]
+}
