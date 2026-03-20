@@ -1,7 +1,7 @@
 .superpowers/
 node_modules/
 dist/
-data/
+data/uploads/
 .env
 *.db
 *.db-journal
