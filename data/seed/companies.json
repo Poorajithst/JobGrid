@@ -1,0 +1,1747 @@
+[
+  {
+    "name": "HubSpot",
+    "domain": "hubspot.com",
+    "greenhouseSlug": "hubspot",
+    "industries": ["Software", "Marketing Tech", "CRM"],
+    "hqLocation": "Cambridge, MA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Wayfair",
+    "domain": "wayfair.com",
+    "greenhouseSlug": "wayfair",
+    "industries": ["E-Commerce", "Retail", "Furniture"],
+    "hqLocation": "Boston, MA",
+    "size": "10001+"
+  },
+  {
+    "name": "Toast",
+    "domain": "toasttab.com",
+    "greenhouseSlug": "toast",
+    "industries": ["Software", "Restaurant Tech", "Fintech"],
+    "hqLocation": "Boston, MA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Klaviyo",
+    "domain": "klaviyo.com",
+    "greenhouseSlug": "klaviyo",
+    "industries": ["Software", "Marketing Tech", "E-Commerce"],
+    "hqLocation": "Boston, MA",
+    "size": "501-1000"
+  },
+  {
+    "name": "Rapid7",
+    "domain": "rapid7.com",
+    "greenhouseSlug": "rapid7",
+    "industries": ["Cybersecurity", "Software"],
+    "hqLocation": "Boston, MA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Moderna",
+    "domain": "modernatx.com",
+    "greenhouseSlug": "moderna",
+    "industries": ["Biotech", "Pharmaceuticals", "Healthcare"],
+    "hqLocation": "Cambridge, MA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Datto",
+    "domain": "datto.com",
+    "greenhouseSlug": "datto",
+    "industries": ["Software", "IT Management", "Cloud"],
+    "hqLocation": "Norwalk, CT",
+    "size": "501-1000"
+  },
+  {
+    "name": "MathWorks",
+    "domain": "mathworks.com",
+    "greenhouseSlug": "mathworks",
+    "industries": ["Software", "Engineering", "Scientific Computing"],
+    "hqLocation": "Natick, MA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Infosys BPM",
+    "domain": "infosysbpm.com",
+    "greenhouseSlug": "infosysbpm",
+    "industries": ["Consulting", "BPO", "Technology Services"],
+    "hqLocation": "Bangalore, India",
+    "size": "10001+"
+  },
+  {
+    "name": "Allegro MicroSystems",
+    "domain": "allegromicro.com",
+    "greenhouseSlug": "allegromicrosystems",
+    "industries": ["Semiconductors", "Manufacturing", "Electronics"],
+    "hqLocation": "Manchester, NH",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Insulet Corporation",
+    "domain": "insulet.com",
+    "greenhouseSlug": "insulet",
+    "industries": ["Medical Devices", "Healthcare"],
+    "hqLocation": "Acton, MA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Airbnb",
+    "domain": "airbnb.com",
+    "greenhouseSlug": "airbnb",
+    "industries": ["Travel", "Marketplace", "Hospitality"],
+    "hqLocation": "San Francisco, CA",
+    "size": "5001-10000"
+  },
+  {
+    "name": "Coinbase",
+    "domain": "coinbase.com",
+    "greenhouseSlug": "coinbase",
+    "industries": ["Fintech", "Crypto", "Finance"],
+    "hqLocation": "San Francisco, CA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Squarespace",
+    "domain": "squarespace.com",
+    "greenhouseSlug": "squarespace",
+    "industries": ["Software", "Web Platforms", "E-Commerce"],
+    "hqLocation": "New York, NY",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Figma",
+    "domain": "figma.com",
+    "greenhouseSlug": "figma",
+    "industries": ["Software", "Design Tools", "Collaboration"],
+    "hqLocation": "San Francisco, CA",
+    "size": "501-1000"
+  },
+  {
+    "name": "Twilio",
+    "domain": "twilio.com",
+    "greenhouseSlug": "twilio",
+    "industries": ["Software", "Communications", "Cloud"],
+    "hqLocation": "San Francisco, CA",
+    "size": "5001-10000"
+  },
+  {
+    "name": "Datadog",
+    "domain": "datadoghq.com",
+    "greenhouseSlug": "datadog",
+    "industries": ["Software", "Monitoring", "Cloud"],
+    "hqLocation": "New York, NY",
+    "size": "5001-10000"
+  },
+  {
+    "name": "Cloudflare",
+    "domain": "cloudflare.com",
+    "greenhouseSlug": "cloudflare",
+    "industries": ["Software", "Networking", "Cybersecurity"],
+    "hqLocation": "San Francisco, CA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "HashiCorp",
+    "domain": "hashicorp.com",
+    "greenhouseSlug": "hashicorp",
+    "industries": ["Software", "DevOps", "Cloud"],
+    "hqLocation": "San Francisco, CA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Dropbox",
+    "domain": "dropbox.com",
+    "greenhouseSlug": "dropbox",
+    "industries": ["Software", "Cloud Storage", "Collaboration"],
+    "hqLocation": "San Francisco, CA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Pinterest",
+    "domain": "pinterest.com",
+    "greenhouseSlug": "pinterest",
+    "industries": ["Social Media", "Advertising", "E-Commerce"],
+    "hqLocation": "San Francisco, CA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Lyft",
+    "domain": "lyft.com",
+    "greenhouseSlug": "lyft",
+    "industries": ["Transportation", "Ridesharing", "Technology"],
+    "hqLocation": "San Francisco, CA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Instacart",
+    "domain": "instacart.com",
+    "greenhouseSlug": "instacart",
+    "industries": ["E-Commerce", "Grocery", "Logistics"],
+    "hqLocation": "San Francisco, CA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Grammarly",
+    "domain": "grammarly.com",
+    "greenhouseSlug": "grammarly",
+    "industries": ["Software", "AI", "Productivity"],
+    "hqLocation": "San Francisco, CA",
+    "size": "501-1000"
+  },
+  {
+    "name": "Robinhood",
+    "domain": "robinhood.com",
+    "greenhouseSlug": "robinhood",
+    "industries": ["Fintech", "Finance", "Investing"],
+    "hqLocation": "Menlo Park, CA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Brex",
+    "domain": "brex.com",
+    "greenhouseSlug": "brex",
+    "industries": ["Fintech", "Finance", "Banking"],
+    "hqLocation": "San Francisco, CA",
+    "size": "501-1000"
+  },
+  {
+    "name": "Plaid",
+    "domain": "plaid.com",
+    "greenhouseSlug": "plaid",
+    "industries": ["Fintech", "Finance", "Banking APIs"],
+    "hqLocation": "San Francisco, CA",
+    "size": "501-1000"
+  },
+  {
+    "name": "Notion",
+    "domain": "notion.so",
+    "greenhouseSlug": "notion",
+    "ashbySlug": "notion",
+    "industries": ["Software", "Productivity", "Collaboration"],
+    "hqLocation": "San Francisco, CA",
+    "size": "201-500"
+  },
+  {
+    "name": "Wealthsimple",
+    "domain": "wealthsimple.com",
+    "greenhouseSlug": "wealthsimple",
+    "industries": ["Fintech", "Finance", "Investing"],
+    "hqLocation": "Toronto, Canada",
+    "size": "501-1000"
+  },
+  {
+    "name": "Webflow",
+    "domain": "webflow.com",
+    "greenhouseSlug": "webflow",
+    "industries": ["Software", "Web Development", "No-Code"],
+    "hqLocation": "San Francisco, CA",
+    "size": "201-500"
+  },
+  {
+    "name": "Stripe",
+    "domain": "stripe.com",
+    "leverSlug": "stripe",
+    "industries": ["Fintech", "Payments", "Finance"],
+    "hqLocation": "San Francisco, CA",
+    "size": "5001-10000"
+  },
+  {
+    "name": "Netflix",
+    "domain": "netflix.com",
+    "leverSlug": "netflix",
+    "industries": ["Streaming", "Entertainment", "Technology"],
+    "hqLocation": "Los Gatos, CA",
+    "size": "10001+"
+  },
+  {
+    "name": "Atlassian",
+    "domain": "atlassian.com",
+    "leverSlug": "atlassian",
+    "industries": ["Software", "Collaboration", "DevOps"],
+    "hqLocation": "Sydney, Australia",
+    "size": "10001+"
+  },
+  {
+    "name": "Postman",
+    "domain": "postman.com",
+    "leverSlug": "postman",
+    "industries": ["Software", "API Development", "DevTools"],
+    "hqLocation": "San Francisco, CA",
+    "size": "501-1000"
+  },
+  {
+    "name": "Ramp",
+    "domain": "ramp.com",
+    "ashbySlug": "ramp",
+    "industries": ["Fintech", "Finance", "Expense Management"],
+    "hqLocation": "New York, NY",
+    "size": "201-500"
+  },
+  {
+    "name": "Rippling",
+    "domain": "rippling.com",
+    "leverSlug": "rippling",
+    "industries": ["HR Tech", "Software", "Payroll"],
+    "hqLocation": "San Francisco, CA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Gusto",
+    "domain": "gusto.com",
+    "leverSlug": "gusto",
+    "industries": ["HR Tech", "Payroll", "Software"],
+    "hqLocation": "San Francisco, CA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Zendesk",
+    "domain": "zendesk.com",
+    "greenhouseSlug": "zendesk",
+    "industries": ["Software", "Customer Service", "CRM"],
+    "hqLocation": "San Francisco, CA",
+    "size": "5001-10000"
+  },
+  {
+    "name": "Intercom",
+    "domain": "intercom.com",
+    "greenhouseSlug": "intercom",
+    "industries": ["Software", "Customer Service", "Communication"],
+    "hqLocation": "San Francisco, CA",
+    "size": "501-1000"
+  },
+  {
+    "name": "Asana",
+    "domain": "asana.com",
+    "leverSlug": "asana",
+    "industries": ["Software", "Project Management", "Productivity"],
+    "hqLocation": "San Francisco, CA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Monday.com",
+    "domain": "monday.com",
+    "greenhouseSlug": "mondaycom",
+    "industries": ["Software", "Project Management", "Collaboration"],
+    "hqLocation": "Tel Aviv, Israel",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Airtable",
+    "domain": "airtable.com",
+    "leverSlug": "airtable",
+    "industries": ["Software", "Database", "No-Code"],
+    "hqLocation": "San Francisco, CA",
+    "size": "501-1000"
+  },
+  {
+    "name": "Amplitude",
+    "domain": "amplitude.com",
+    "leverSlug": "amplitude",
+    "industries": ["Software", "Analytics", "Product Intelligence"],
+    "hqLocation": "San Francisco, CA",
+    "size": "501-1000"
+  },
+  {
+    "name": "Mixpanel",
+    "domain": "mixpanel.com",
+    "leverSlug": "mixpanel",
+    "industries": ["Software", "Analytics", "Product Intelligence"],
+    "hqLocation": "San Francisco, CA",
+    "size": "201-500"
+  },
+  {
+    "name": "Segment",
+    "domain": "segment.com",
+    "leverSlug": "segment",
+    "industries": ["Software", "Data Infrastructure", "Analytics"],
+    "hqLocation": "San Francisco, CA",
+    "size": "501-1000"
+  },
+  {
+    "name": "Contentful",
+    "domain": "contentful.com",
+    "leverSlug": "contentful",
+    "industries": ["Software", "CMS", "Content Platform"],
+    "hqLocation": "Berlin, Germany",
+    "size": "501-1000"
+  },
+  {
+    "name": "Miro",
+    "domain": "miro.com",
+    "greenhouseSlug": "miro",
+    "industries": ["Software", "Collaboration", "Whiteboarding"],
+    "hqLocation": "San Francisco, CA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Loom",
+    "domain": "loom.com",
+    "greenhouseSlug": "loom",
+    "industries": ["Software", "Video", "Communication"],
+    "hqLocation": "San Francisco, CA",
+    "size": "201-500"
+  },
+  {
+    "name": "Discord",
+    "domain": "discord.com",
+    "leverSlug": "discord",
+    "industries": ["Social Media", "Communication", "Gaming"],
+    "hqLocation": "San Francisco, CA",
+    "size": "501-1000"
+  },
+  {
+    "name": "Duolingo",
+    "domain": "duolingo.com",
+    "leverSlug": "duolingo",
+    "industries": ["EdTech", "Education", "Mobile Apps"],
+    "hqLocation": "Pittsburgh, PA",
+    "size": "501-1000"
+  },
+  {
+    "name": "Coursera",
+    "domain": "coursera.org",
+    "leverSlug": "coursera",
+    "industries": ["EdTech", "Education", "E-Learning"],
+    "hqLocation": "Mountain View, CA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Chegg",
+    "domain": "chegg.com",
+    "greenhouseSlug": "chegg",
+    "industries": ["EdTech", "Education", "Student Services"],
+    "hqLocation": "Santa Clara, CA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "DoorDash",
+    "domain": "doordash.com",
+    "greenhouseSlug": "doordash",
+    "industries": ["Food Delivery", "Logistics", "Marketplace"],
+    "hqLocation": "San Francisco, CA",
+    "size": "5001-10000"
+  },
+  {
+    "name": "Uber",
+    "domain": "uber.com",
+    "leverSlug": "uber",
+    "industries": ["Transportation", "Ridesharing", "Logistics"],
+    "hqLocation": "San Francisco, CA",
+    "size": "10001+"
+  },
+  {
+    "name": "Palantir",
+    "domain": "palantir.com",
+    "leverSlug": "palantir",
+    "industries": ["Software", "Data Analytics", "Government"],
+    "hqLocation": "Denver, CO",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Snowflake",
+    "domain": "snowflake.com",
+    "greenhouseSlug": "snowflake",
+    "industries": ["Software", "Data Warehouse", "Cloud"],
+    "hqLocation": "Bozeman, MT",
+    "size": "5001-10000"
+  },
+  {
+    "name": "Databricks",
+    "domain": "databricks.com",
+    "leverSlug": "databricks",
+    "industries": ["Software", "Data Engineering", "AI"],
+    "hqLocation": "San Francisco, CA",
+    "size": "5001-10000"
+  },
+  {
+    "name": "Confluent",
+    "domain": "confluent.io",
+    "leverSlug": "confluent",
+    "industries": ["Software", "Data Streaming", "Cloud"],
+    "hqLocation": "Mountain View, CA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "MongoDB",
+    "domain": "mongodb.com",
+    "greenhouseSlug": "mongodb",
+    "industries": ["Software", "Database", "Cloud"],
+    "hqLocation": "New York, NY",
+    "size": "5001-10000"
+  },
+  {
+    "name": "Elastic",
+    "domain": "elastic.co",
+    "leverSlug": "elastic",
+    "industries": ["Software", "Search", "Data Analytics"],
+    "hqLocation": "Mountain View, CA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Sumo Logic",
+    "domain": "sumologic.com",
+    "greenhouseSlug": "sumologic",
+    "industries": ["Software", "Log Management", "Security"],
+    "hqLocation": "Redwood City, CA",
+    "size": "501-1000"
+  },
+  {
+    "name": "New Relic",
+    "domain": "newrelic.com",
+    "greenhouseSlug": "newrelic",
+    "industries": ["Software", "Observability", "Monitoring"],
+    "hqLocation": "San Francisco, CA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "PagerDuty",
+    "domain": "pagerduty.com",
+    "leverSlug": "pagerduty",
+    "industries": ["Software", "Incident Management", "IT Operations"],
+    "hqLocation": "San Francisco, CA",
+    "size": "501-1000"
+  },
+  {
+    "name": "Okta",
+    "domain": "okta.com",
+    "greenhouseSlug": "okta",
+    "industries": ["Software", "Identity Management", "Cybersecurity"],
+    "hqLocation": "San Francisco, CA",
+    "size": "5001-10000"
+  },
+  {
+    "name": "CrowdStrike",
+    "domain": "crowdstrike.com",
+    "leverSlug": "crowdstrike",
+    "industries": ["Cybersecurity", "Software", "Endpoint Security"],
+    "hqLocation": "Austin, TX",
+    "size": "5001-10000"
+  },
+  {
+    "name": "Palo Alto Networks",
+    "domain": "paloaltonetworks.com",
+    "greenhouseSlug": "paloaltonetworks",
+    "industries": ["Cybersecurity", "Networking", "Software"],
+    "hqLocation": "Santa Clara, CA",
+    "size": "10001+"
+  },
+  {
+    "name": "Zscaler",
+    "domain": "zscaler.com",
+    "leverSlug": "zscaler",
+    "industries": ["Cybersecurity", "Cloud Security", "Networking"],
+    "hqLocation": "San Jose, CA",
+    "size": "5001-10000"
+  },
+  {
+    "name": "SentinelOne",
+    "domain": "sentinelone.com",
+    "leverSlug": "sentinelone",
+    "industries": ["Cybersecurity", "AI", "Endpoint Security"],
+    "hqLocation": "Mountain View, CA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Checkr",
+    "domain": "checkr.com",
+    "leverSlug": "checkr",
+    "industries": ["HR Tech", "Background Screening", "Software"],
+    "hqLocation": "San Francisco, CA",
+    "size": "501-1000"
+  },
+  {
+    "name": "Lattice",
+    "domain": "lattice.com",
+    "leverSlug": "lattice",
+    "industries": ["HR Tech", "Performance Management", "Software"],
+    "hqLocation": "San Francisco, CA",
+    "size": "201-500"
+  },
+  {
+    "name": "Greenhouse",
+    "domain": "greenhouse.io",
+    "leverSlug": "greenhouse",
+    "industries": ["HR Tech", "Recruiting", "Software"],
+    "hqLocation": "New York, NY",
+    "size": "501-1000"
+  },
+  {
+    "name": "Lever",
+    "domain": "lever.co",
+    "leverSlug": "lever",
+    "industries": ["HR Tech", "Recruiting", "Software"],
+    "hqLocation": "San Francisco, CA",
+    "size": "201-500"
+  },
+  {
+    "name": "Workday",
+    "domain": "workday.com",
+    "leverSlug": "workday",
+    "industries": ["HR Tech", "ERP", "Finance Software"],
+    "hqLocation": "Pleasanton, CA",
+    "size": "10001+"
+  },
+  {
+    "name": "ServiceNow",
+    "domain": "servicenow.com",
+    "leverSlug": "servicenow",
+    "industries": ["Software", "IT Service Management", "Cloud"],
+    "hqLocation": "Santa Clara, CA",
+    "size": "10001+"
+  },
+  {
+    "name": "Salesforce",
+    "domain": "salesforce.com",
+    "leverSlug": "salesforce",
+    "industries": ["Software", "CRM", "Cloud"],
+    "hqLocation": "San Francisco, CA",
+    "size": "10001+"
+  },
+  {
+    "name": "HubSpot Ventures",
+    "domain": "hubspotventures.com",
+    "greenhouseSlug": "hubspotventures",
+    "industries": ["Venture Capital", "Investment"],
+    "hqLocation": "Cambridge, MA",
+    "size": "1-50"
+  },
+  {
+    "name": "Zenefits",
+    "domain": "zenefits.com",
+    "leverSlug": "zenefits",
+    "industries": ["HR Tech", "Benefits Administration", "Software"],
+    "hqLocation": "San Francisco, CA",
+    "size": "201-500"
+  },
+  {
+    "name": "Benchling",
+    "domain": "benchling.com",
+    "leverSlug": "benchling",
+    "industries": ["Biotech Software", "Life Sciences", "R&D"],
+    "hqLocation": "San Francisco, CA",
+    "size": "201-500"
+  },
+  {
+    "name": "Veeva Systems",
+    "domain": "veeva.com",
+    "leverSlug": "veeva",
+    "industries": ["Software", "Life Sciences", "Cloud"],
+    "hqLocation": "Pleasanton, CA",
+    "size": "5001-10000"
+  },
+  {
+    "name": "Epic Systems",
+    "domain": "epic.com",
+    "leverSlug": "epic",
+    "industries": ["Healthcare IT", "EHR", "Software"],
+    "hqLocation": "Verona, WI",
+    "size": "10001+"
+  },
+  {
+    "name": "Cerner",
+    "domain": "cerner.com",
+    "leverSlug": "cerner",
+    "industries": ["Healthcare IT", "EHR", "Software"],
+    "hqLocation": "Kansas City, MO",
+    "size": "10001+"
+  },
+  {
+    "name": "Change Healthcare",
+    "domain": "changehealthcare.com",
+    "leverSlug": "changehealthcare",
+    "industries": ["Healthcare IT", "Healthcare", "Software"],
+    "hqLocation": "Nashville, TN",
+    "size": "10001+"
+  },
+  {
+    "name": "Hinge Health",
+    "domain": "hingehealth.com",
+    "ashbySlug": "hingehealth",
+    "industries": ["Digital Health", "Healthcare", "Physical Therapy"],
+    "hqLocation": "San Francisco, CA",
+    "size": "501-1000"
+  },
+  {
+    "name": "Ro",
+    "domain": "ro.co",
+    "ashbySlug": "ro",
+    "industries": ["Digital Health", "Telemedicine", "Healthcare"],
+    "hqLocation": "New York, NY",
+    "size": "501-1000"
+  },
+  {
+    "name": "Nerdio",
+    "domain": "getnerdio.com",
+    "leverSlug": "nerdio",
+    "industries": ["Cloud", "IT Management", "Software"],
+    "hqLocation": "Chicago, IL",
+    "size": "201-500"
+  },
+  {
+    "name": "Samsara",
+    "domain": "samsara.com",
+    "leverSlug": "samsara",
+    "industries": ["IoT", "Fleet Management", "Software"],
+    "hqLocation": "San Francisco, CA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Verkada",
+    "domain": "verkada.com",
+    "leverSlug": "verkada",
+    "industries": ["Physical Security", "IoT", "Software"],
+    "hqLocation": "San Mateo, CA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Scale AI",
+    "domain": "scale.com",
+    "leverSlug": "scaleai",
+    "industries": ["AI", "Data Labeling", "Machine Learning"],
+    "hqLocation": "San Francisco, CA",
+    "size": "501-1000"
+  },
+  {
+    "name": "Weights & Biases",
+    "domain": "wandb.ai",
+    "leverSlug": "wandb",
+    "industries": ["AI", "MLOps", "Software"],
+    "hqLocation": "San Francisco, CA",
+    "size": "201-500"
+  },
+  {
+    "name": "Hugging Face",
+    "domain": "huggingface.co",
+    "leverSlug": "huggingface",
+    "industries": ["AI", "Open Source", "Machine Learning"],
+    "hqLocation": "New York, NY",
+    "size": "201-500"
+  },
+  {
+    "name": "Cohere",
+    "domain": "cohere.com",
+    "ashbySlug": "cohere",
+    "industries": ["AI", "NLP", "Enterprise Software"],
+    "hqLocation": "Toronto, Canada",
+    "size": "201-500"
+  },
+  {
+    "name": "Anthropic",
+    "domain": "anthropic.com",
+    "leverSlug": "anthropic",
+    "industries": ["AI", "Research", "Machine Learning"],
+    "hqLocation": "San Francisco, CA",
+    "size": "201-500"
+  },
+  {
+    "name": "OpenAI",
+    "domain": "openai.com",
+    "leverSlug": "openai",
+    "industries": ["AI", "Research", "Machine Learning"],
+    "hqLocation": "San Francisco, CA",
+    "size": "501-1000"
+  },
+  {
+    "name": "Mistral AI",
+    "domain": "mistral.ai",
+    "ashbySlug": "mistral",
+    "industries": ["AI", "LLM", "Research"],
+    "hqLocation": "Paris, France",
+    "size": "51-200"
+  },
+  {
+    "name": "Anyscale",
+    "domain": "anyscale.com",
+    "ashbySlug": "anyscale",
+    "industries": ["AI", "Distributed Computing", "Cloud"],
+    "hqLocation": "San Francisco, CA",
+    "size": "201-500"
+  },
+  {
+    "name": "Retool",
+    "domain": "retool.com",
+    "leverSlug": "retool",
+    "industries": ["Software", "Low-Code", "Internal Tools"],
+    "hqLocation": "San Francisco, CA",
+    "size": "201-500"
+  },
+  {
+    "name": "Linear",
+    "domain": "linear.app",
+    "ashbySlug": "linear",
+    "industries": ["Software", "Project Management", "Developer Tools"],
+    "hqLocation": "San Francisco, CA",
+    "size": "51-200"
+  },
+  {
+    "name": "Vercel",
+    "domain": "vercel.com",
+    "ashbySlug": "vercel",
+    "industries": ["Software", "Web Hosting", "Developer Tools"],
+    "hqLocation": "San Francisco, CA",
+    "size": "201-500"
+  },
+  {
+    "name": "Supabase",
+    "domain": "supabase.com",
+    "ashbySlug": "supabase",
+    "industries": ["Software", "Database", "Developer Tools"],
+    "hqLocation": "San Francisco, CA",
+    "size": "51-200"
+  },
+  {
+    "name": "PlanetScale",
+    "domain": "planetscale.com",
+    "ashbySlug": "planetscale",
+    "industries": ["Software", "Database", "Cloud"],
+    "hqLocation": "San Francisco, CA",
+    "size": "51-200"
+  },
+  {
+    "name": "Temporal",
+    "domain": "temporal.io",
+    "leverSlug": "temporal",
+    "industries": ["Software", "Developer Tools", "Workflow"],
+    "hqLocation": "Bellevue, WA",
+    "size": "201-500"
+  },
+  {
+    "name": "Pulumi",
+    "domain": "pulumi.com",
+    "leverSlug": "pulumi",
+    "industries": ["Software", "DevOps", "Infrastructure as Code"],
+    "hqLocation": "Seattle, WA",
+    "size": "51-200"
+  },
+  {
+    "name": "LaunchDarkly",
+    "domain": "launchdarkly.com",
+    "leverSlug": "launchdarkly",
+    "industries": ["Software", "Feature Management", "DevOps"],
+    "hqLocation": "Oakland, CA",
+    "size": "201-500"
+  },
+  {
+    "name": "Sentry",
+    "domain": "sentry.io",
+    "leverSlug": "sentry",
+    "industries": ["Software", "Error Monitoring", "Developer Tools"],
+    "hqLocation": "San Francisco, CA",
+    "size": "201-500"
+  },
+  {
+    "name": "Grafana Labs",
+    "domain": "grafana.com",
+    "leverSlug": "grafana",
+    "industries": ["Software", "Observability", "Open Source"],
+    "hqLocation": "New York, NY",
+    "size": "501-1000"
+  },
+  {
+    "name": "Netlify",
+    "domain": "netlify.com",
+    "leverSlug": "netlify",
+    "industries": ["Software", "Web Hosting", "Developer Tools"],
+    "hqLocation": "San Francisco, CA",
+    "size": "201-500"
+  },
+  {
+    "name": "Fastly",
+    "domain": "fastly.com",
+    "leverSlug": "fastly",
+    "industries": ["CDN", "Cloud", "Networking"],
+    "hqLocation": "San Francisco, CA",
+    "size": "501-1000"
+  },
+  {
+    "name": "Twitch",
+    "domain": "twitch.tv",
+    "leverSlug": "twitch",
+    "industries": ["Streaming", "Gaming", "Entertainment"],
+    "hqLocation": "San Francisco, CA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Roblox",
+    "domain": "roblox.com",
+    "leverSlug": "roblox",
+    "industries": ["Gaming", "Metaverse", "Entertainment"],
+    "hqLocation": "San Mateo, CA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Unity Technologies",
+    "domain": "unity.com",
+    "leverSlug": "unity",
+    "industries": ["Gaming", "Software", "3D Development"],
+    "hqLocation": "San Francisco, CA",
+    "size": "5001-10000"
+  },
+  {
+    "name": "Epic Games",
+    "domain": "epicgames.com",
+    "leverSlug": "epicgames",
+    "industries": ["Gaming", "Software", "Entertainment"],
+    "hqLocation": "Cary, NC",
+    "size": "5001-10000"
+  },
+  {
+    "name": "Shopify",
+    "domain": "shopify.com",
+    "leverSlug": "shopify",
+    "industries": ["E-Commerce", "Software", "Retail"],
+    "hqLocation": "Ottawa, Canada",
+    "size": "10001+"
+  },
+  {
+    "name": "BigCommerce",
+    "domain": "bigcommerce.com",
+    "leverSlug": "bigcommerce",
+    "industries": ["E-Commerce", "Software", "Retail"],
+    "hqLocation": "Austin, TX",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Affirm",
+    "domain": "affirm.com",
+    "leverSlug": "affirm",
+    "industries": ["Fintech", "Buy Now Pay Later", "Finance"],
+    "hqLocation": "San Francisco, CA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Chime",
+    "domain": "chime.com",
+    "leverSlug": "chime",
+    "industries": ["Fintech", "Banking", "Mobile Finance"],
+    "hqLocation": "San Francisco, CA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Mercury",
+    "domain": "mercury.com",
+    "ashbySlug": "mercury",
+    "industries": ["Fintech", "Banking", "Startup Finance"],
+    "hqLocation": "San Francisco, CA",
+    "size": "201-500"
+  },
+  {
+    "name": "Deel",
+    "domain": "deel.com",
+    "leverSlug": "deel",
+    "industries": ["HR Tech", "Global Payroll", "Remote Work"],
+    "hqLocation": "San Francisco, CA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Remote",
+    "domain": "remote.com",
+    "leverSlug": "remote",
+    "industries": ["HR Tech", "Global Payroll", "Remote Work"],
+    "hqLocation": "San Francisco, CA",
+    "size": "501-1000"
+  },
+  {
+    "name": "Carta",
+    "domain": "carta.com",
+    "leverSlug": "carta",
+    "industries": ["Fintech", "Cap Table Management", "Finance"],
+    "hqLocation": "San Francisco, CA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Pilot",
+    "domain": "pilot.com",
+    "leverSlug": "pilot",
+    "industries": ["Fintech", "Accounting", "Finance"],
+    "hqLocation": "San Francisco, CA",
+    "size": "201-500"
+  },
+  {
+    "name": "AngelList",
+    "domain": "angellist.com",
+    "leverSlug": "angellist",
+    "industries": ["Venture Capital", "Startup Funding", "Finance"],
+    "hqLocation": "San Francisco, CA",
+    "size": "201-500"
+  },
+  {
+    "name": "Crunchbase",
+    "domain": "crunchbase.com",
+    "leverSlug": "crunchbase",
+    "industries": ["Business Intelligence", "Data", "Media"],
+    "hqLocation": "San Francisco, CA",
+    "size": "201-500"
+  },
+  {
+    "name": "ZoomInfo",
+    "domain": "zoominfo.com",
+    "leverSlug": "zoominfo",
+    "industries": ["Data Intelligence", "Sales Tech", "Marketing"],
+    "hqLocation": "Waltham, MA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Gong",
+    "domain": "gong.io",
+    "leverSlug": "gong",
+    "industries": ["Sales Tech", "Revenue Intelligence", "Software"],
+    "hqLocation": "San Francisco, CA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Outreach",
+    "domain": "outreach.io",
+    "leverSlug": "outreach",
+    "industries": ["Sales Tech", "Software", "Communication"],
+    "hqLocation": "Seattle, WA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Salesloft",
+    "domain": "salesloft.com",
+    "leverSlug": "salesloft",
+    "industries": ["Sales Tech", "CRM", "Software"],
+    "hqLocation": "Atlanta, GA",
+    "size": "501-1000"
+  },
+  {
+    "name": "Drift",
+    "domain": "drift.com",
+    "leverSlug": "drift",
+    "industries": ["Marketing Tech", "Conversational AI", "Sales Tech"],
+    "hqLocation": "Boston, MA",
+    "size": "501-1000"
+  },
+  {
+    "name": "Qualified",
+    "domain": "qualified.com",
+    "ashbySlug": "qualified",
+    "industries": ["Sales Tech", "Marketing Tech", "Software"],
+    "hqLocation": "San Francisco, CA",
+    "size": "51-200"
+  },
+  {
+    "name": "Seismic",
+    "domain": "seismic.com",
+    "leverSlug": "seismic",
+    "industries": ["Sales Tech", "Content Management", "Software"],
+    "hqLocation": "San Diego, CA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Highspot",
+    "domain": "highspot.com",
+    "leverSlug": "highspot",
+    "industries": ["Sales Tech", "Content Management", "Software"],
+    "hqLocation": "Seattle, WA",
+    "size": "501-1000"
+  },
+  {
+    "name": "Sprinklr",
+    "domain": "sprinklr.com",
+    "leverSlug": "sprinklr",
+    "industries": ["Marketing Tech", "Social Media Management", "Software"],
+    "hqLocation": "New York, NY",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Hootsuite",
+    "domain": "hootsuite.com",
+    "leverSlug": "hootsuite",
+    "industries": ["Marketing Tech", "Social Media", "Software"],
+    "hqLocation": "Vancouver, Canada",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Sprout Social",
+    "domain": "sproutsocial.com",
+    "leverSlug": "sproutsocial",
+    "industries": ["Marketing Tech", "Social Media", "Software"],
+    "hqLocation": "Chicago, IL",
+    "size": "501-1000"
+  },
+  {
+    "name": "Mailchimp",
+    "domain": "mailchimp.com",
+    "leverSlug": "mailchimp",
+    "industries": ["Marketing Tech", "Email Marketing", "Software"],
+    "hqLocation": "Atlanta, GA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Sendgrid",
+    "domain": "sendgrid.com",
+    "leverSlug": "sendgrid",
+    "industries": ["Marketing Tech", "Email Infrastructure", "Cloud"],
+    "hqLocation": "Denver, CO",
+    "size": "501-1000"
+  },
+  {
+    "name": "Braze",
+    "domain": "braze.com",
+    "leverSlug": "braze",
+    "industries": ["Marketing Tech", "Customer Engagement", "Software"],
+    "hqLocation": "New York, NY",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Iterable",
+    "domain": "iterable.com",
+    "leverSlug": "iterable",
+    "industries": ["Marketing Tech", "Customer Engagement", "Software"],
+    "hqLocation": "San Francisco, CA",
+    "size": "501-1000"
+  },
+  {
+    "name": "Optimizely",
+    "domain": "optimizely.com",
+    "leverSlug": "optimizely",
+    "industries": ["Marketing Tech", "A/B Testing", "Software"],
+    "hqLocation": "San Francisco, CA",
+    "size": "501-1000"
+  },
+  {
+    "name": "Qualtrics",
+    "domain": "qualtrics.com",
+    "leverSlug": "qualtrics",
+    "industries": ["Survey Software", "CX", "Data Analytics"],
+    "hqLocation": "Provo, UT",
+    "size": "5001-10000"
+  },
+  {
+    "name": "Medallia",
+    "domain": "medallia.com",
+    "leverSlug": "medallia",
+    "industries": ["CX", "Feedback Management", "Software"],
+    "hqLocation": "San Francisco, CA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Gainsight",
+    "domain": "gainsight.com",
+    "leverSlug": "gainsight",
+    "industries": ["Customer Success", "Software", "SaaS"],
+    "hqLocation": "San Francisco, CA",
+    "size": "501-1000"
+  },
+  {
+    "name": "Totango",
+    "domain": "totango.com",
+    "leverSlug": "totango",
+    "industries": ["Customer Success", "Software", "SaaS"],
+    "hqLocation": "San Francisco, CA",
+    "size": "201-500"
+  },
+  {
+    "name": "Bain & Company",
+    "domain": "bain.com",
+    "leverSlug": "bain",
+    "industries": ["Consulting", "Strategy", "Management Consulting"],
+    "hqLocation": "Boston, MA",
+    "size": "10001+"
+  },
+  {
+    "name": "McKinsey & Company",
+    "domain": "mckinsey.com",
+    "leverSlug": "mckinsey",
+    "industries": ["Consulting", "Strategy", "Management Consulting"],
+    "hqLocation": "New York, NY",
+    "size": "10001+"
+  },
+  {
+    "name": "Boston Consulting Group",
+    "domain": "bcg.com",
+    "leverSlug": "bcg",
+    "industries": ["Consulting", "Strategy", "Management Consulting"],
+    "hqLocation": "Boston, MA",
+    "size": "10001+"
+  },
+  {
+    "name": "Deloitte",
+    "domain": "deloitte.com",
+    "leverSlug": "deloitte",
+    "industries": ["Consulting", "Audit", "Professional Services"],
+    "hqLocation": "London, UK",
+    "size": "10001+"
+  },
+  {
+    "name": "Accenture",
+    "domain": "accenture.com",
+    "leverSlug": "accenture",
+    "industries": ["Consulting", "Technology Services", "Outsourcing"],
+    "hqLocation": "Dublin, Ireland",
+    "size": "10001+"
+  },
+  {
+    "name": "Thoughtworks",
+    "domain": "thoughtworks.com",
+    "leverSlug": "thoughtworks",
+    "industries": ["Consulting", "Software Development", "Technology"],
+    "hqLocation": "Chicago, IL",
+    "size": "10001+"
+  },
+  {
+    "name": "EPAM Systems",
+    "domain": "epam.com",
+    "leverSlug": "epam",
+    "industries": ["Software Development", "Consulting", "Technology Services"],
+    "hqLocation": "Newtown, PA",
+    "size": "10001+"
+  },
+  {
+    "name": "Cognizant",
+    "domain": "cognizant.com",
+    "leverSlug": "cognizant",
+    "industries": ["IT Services", "Consulting", "BPO"],
+    "hqLocation": "Teaneck, NJ",
+    "size": "10001+"
+  },
+  {
+    "name": "Tata Consultancy Services",
+    "domain": "tcs.com",
+    "leverSlug": "tcs",
+    "industries": ["IT Services", "Consulting", "Technology"],
+    "hqLocation": "Mumbai, India",
+    "size": "10001+"
+  },
+  {
+    "name": "Wipro",
+    "domain": "wipro.com",
+    "leverSlug": "wipro",
+    "industries": ["IT Services", "Consulting", "Technology"],
+    "hqLocation": "Bangalore, India",
+    "size": "10001+"
+  },
+  {
+    "name": "HCL Technologies",
+    "domain": "hcltech.com",
+    "leverSlug": "hcltech",
+    "industries": ["IT Services", "Consulting", "Technology"],
+    "hqLocation": "Noida, India",
+    "size": "10001+"
+  },
+  {
+    "name": "Capgemini",
+    "domain": "capgemini.com",
+    "leverSlug": "capgemini",
+    "industries": ["IT Services", "Consulting", "Technology"],
+    "hqLocation": "Paris, France",
+    "size": "10001+"
+  },
+  {
+    "name": "Siemens",
+    "domain": "siemens.com",
+    "leverSlug": "siemens",
+    "industries": ["Manufacturing", "Engineering", "Industrial Technology"],
+    "hqLocation": "Munich, Germany",
+    "size": "10001+"
+  },
+  {
+    "name": "Honeywell",
+    "domain": "honeywell.com",
+    "leverSlug": "honeywell",
+    "industries": ["Manufacturing", "Industrial Technology", "Aerospace"],
+    "hqLocation": "Charlotte, NC",
+    "size": "10001+"
+  },
+  {
+    "name": "Rockwell Automation",
+    "domain": "rockwellautomation.com",
+    "leverSlug": "rockwellautomation",
+    "industries": ["Manufacturing", "Industrial Automation", "Engineering"],
+    "hqLocation": "Milwaukee, WI",
+    "size": "10001+"
+  },
+  {
+    "name": "Emerson Electric",
+    "domain": "emerson.com",
+    "leverSlug": "emerson",
+    "industries": ["Manufacturing", "Industrial Technology", "Engineering"],
+    "hqLocation": "St. Louis, MO",
+    "size": "10001+"
+  },
+  {
+    "name": "Parker Hannifin",
+    "domain": "parker.com",
+    "leverSlug": "parker",
+    "industries": ["Manufacturing", "Industrial Technology", "Engineering"],
+    "hqLocation": "Cleveland, OH",
+    "size": "10001+"
+  },
+  {
+    "name": "Caterpillar",
+    "domain": "caterpillar.com",
+    "leverSlug": "caterpillar",
+    "industries": ["Manufacturing", "Construction Equipment", "Mining"],
+    "hqLocation": "Irving, TX",
+    "size": "10001+"
+  },
+  {
+    "name": "Deere & Company",
+    "domain": "deere.com",
+    "leverSlug": "deere",
+    "industries": ["Manufacturing", "Agricultural Equipment", "Construction"],
+    "hqLocation": "Moline, IL",
+    "size": "10001+"
+  },
+  {
+    "name": "3M",
+    "domain": "3m.com",
+    "leverSlug": "3m",
+    "industries": ["Manufacturing", "Consumer Products", "Healthcare"],
+    "hqLocation": "St. Paul, MN",
+    "size": "10001+"
+  },
+  {
+    "name": "Corning",
+    "domain": "corning.com",
+    "leverSlug": "corning",
+    "industries": ["Manufacturing", "Materials Science", "Electronics"],
+    "hqLocation": "Corning, NY",
+    "size": "10001+"
+  },
+  {
+    "name": "Stryker",
+    "domain": "stryker.com",
+    "greenhouseSlug": "stryker",
+    "industries": ["Medical Devices", "Healthcare", "Manufacturing"],
+    "hqLocation": "Kalamazoo, MI",
+    "size": "10001+"
+  },
+  {
+    "name": "Becton Dickinson",
+    "domain": "bd.com",
+    "leverSlug": "bd",
+    "industries": ["Medical Devices", "Healthcare", "Manufacturing"],
+    "hqLocation": "Franklin Lakes, NJ",
+    "size": "10001+"
+  },
+  {
+    "name": "Edwards Lifesciences",
+    "domain": "edwards.com",
+    "leverSlug": "edwards",
+    "industries": ["Medical Devices", "Healthcare", "Cardiology"],
+    "hqLocation": "Irvine, CA",
+    "size": "10001+"
+  },
+  {
+    "name": "Intuitive Surgical",
+    "domain": "intuitive.com",
+    "leverSlug": "intuitive",
+    "industries": ["Medical Devices", "Robotics", "Healthcare"],
+    "hqLocation": "Sunnyvale, CA",
+    "size": "10001+"
+  },
+  {
+    "name": "Illumina",
+    "domain": "illumina.com",
+    "leverSlug": "illumina",
+    "industries": ["Genomics", "Biotech", "Healthcare"],
+    "hqLocation": "San Diego, CA",
+    "size": "10001+"
+  },
+  {
+    "name": "10x Genomics",
+    "domain": "10xgenomics.com",
+    "leverSlug": "10xgenomics",
+    "industries": ["Genomics", "Biotech", "Life Sciences"],
+    "hqLocation": "Pleasanton, CA",
+    "size": "501-1000"
+  },
+  {
+    "name": "Genentech",
+    "domain": "gene.com",
+    "leverSlug": "genentech",
+    "industries": ["Biotech", "Pharmaceuticals", "Healthcare"],
+    "hqLocation": "South San Francisco, CA",
+    "size": "10001+"
+  },
+  {
+    "name": "Gilead Sciences",
+    "domain": "gilead.com",
+    "leverSlug": "gilead",
+    "industries": ["Biotech", "Pharmaceuticals", "Healthcare"],
+    "hqLocation": "Foster City, CA",
+    "size": "10001+"
+  },
+  {
+    "name": "Biogen",
+    "domain": "biogen.com",
+    "leverSlug": "biogen",
+    "industries": ["Biotech", "Neuroscience", "Pharmaceuticals"],
+    "hqLocation": "Cambridge, MA",
+    "size": "10001+"
+  },
+  {
+    "name": "Sarepta Therapeutics",
+    "domain": "sarepta.com",
+    "leverSlug": "sarepta",
+    "industries": ["Biotech", "Rare Disease", "Pharmaceuticals"],
+    "hqLocation": "Cambridge, MA",
+    "size": "501-1000"
+  },
+  {
+    "name": "Alnylam Pharmaceuticals",
+    "domain": "alnylam.com",
+    "greenhouseSlug": "alnylam",
+    "industries": ["Biotech", "RNAi Therapeutics", "Pharmaceuticals"],
+    "hqLocation": "Cambridge, MA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Regeneron",
+    "domain": "regeneron.com",
+    "leverSlug": "regeneron",
+    "industries": ["Biotech", "Pharmaceuticals", "Healthcare"],
+    "hqLocation": "Tarrytown, NY",
+    "size": "10001+"
+  },
+  {
+    "name": "Vertex Pharmaceuticals",
+    "domain": "vrtx.com",
+    "leverSlug": "vertexpharma",
+    "industries": ["Biotech", "Rare Disease", "Pharmaceuticals"],
+    "hqLocation": "Boston, MA",
+    "size": "5001-10000"
+  },
+  {
+    "name": "JPMorgan Chase",
+    "domain": "jpmorganchase.com",
+    "leverSlug": "jpmorganchase",
+    "industries": ["Finance", "Banking", "Investment Banking"],
+    "hqLocation": "New York, NY",
+    "size": "10001+"
+  },
+  {
+    "name": "Goldman Sachs",
+    "domain": "goldmansachs.com",
+    "leverSlug": "goldmansachs",
+    "industries": ["Finance", "Investment Banking", "Asset Management"],
+    "hqLocation": "New York, NY",
+    "size": "10001+"
+  },
+  {
+    "name": "Morgan Stanley",
+    "domain": "morganstanley.com",
+    "leverSlug": "morganstanley",
+    "industries": ["Finance", "Investment Banking", "Wealth Management"],
+    "hqLocation": "New York, NY",
+    "size": "10001+"
+  },
+  {
+    "name": "Fidelity Investments",
+    "domain": "fidelity.com",
+    "leverSlug": "fidelity",
+    "industries": ["Finance", "Asset Management", "Retail Investing"],
+    "hqLocation": "Boston, MA",
+    "size": "10001+"
+  },
+  {
+    "name": "Vanguard",
+    "domain": "vanguard.com",
+    "leverSlug": "vanguard",
+    "industries": ["Finance", "Asset Management", "Index Funds"],
+    "hqLocation": "Malvern, PA",
+    "size": "10001+"
+  },
+  {
+    "name": "BlackRock",
+    "domain": "blackrock.com",
+    "leverSlug": "blackrock",
+    "industries": ["Finance", "Asset Management", "Investment"],
+    "hqLocation": "New York, NY",
+    "size": "10001+"
+  },
+  {
+    "name": "Citadel",
+    "domain": "citadel.com",
+    "leverSlug": "citadel",
+    "industries": ["Finance", "Hedge Fund", "Investment"],
+    "hqLocation": "Miami, FL",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Two Sigma",
+    "domain": "twosigma.com",
+    "leverSlug": "twosigma",
+    "industries": ["Finance", "Quantitative Finance", "Technology"],
+    "hqLocation": "New York, NY",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Jane Street",
+    "domain": "janestreet.com",
+    "leverSlug": "janestreet",
+    "industries": ["Finance", "Quantitative Trading", "Technology"],
+    "hqLocation": "New York, NY",
+    "size": "501-1000"
+  },
+  {
+    "name": "Paladin Labs",
+    "domain": "paladinlabs.com",
+    "ashbySlug": "paladinlabs",
+    "industries": ["Pharmaceuticals", "Healthcare", "Specialty Pharma"],
+    "hqLocation": "Montreal, Canada",
+    "size": "201-500"
+  },
+  {
+    "name": "Faire",
+    "domain": "faire.com",
+    "leverSlug": "faire",
+    "industries": ["B2B Marketplace", "Retail", "E-Commerce"],
+    "hqLocation": "San Francisco, CA",
+    "size": "501-1000"
+  },
+  {
+    "name": "Flexport",
+    "domain": "flexport.com",
+    "leverSlug": "flexport",
+    "industries": ["Logistics", "Supply Chain", "Freight"],
+    "hqLocation": "San Francisco, CA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Project44",
+    "domain": "project44.com",
+    "leverSlug": "project44",
+    "industries": ["Logistics", "Supply Chain", "Software"],
+    "hqLocation": "Chicago, IL",
+    "size": "501-1000"
+  },
+  {
+    "name": "Convoy",
+    "domain": "convoy.com",
+    "leverSlug": "convoy",
+    "industries": ["Logistics", "Freight", "Marketplace"],
+    "hqLocation": "Seattle, WA",
+    "size": "501-1000"
+  },
+  {
+    "name": "Sennder",
+    "domain": "sennder.com",
+    "leverSlug": "sennder",
+    "industries": ["Logistics", "Freight", "Technology"],
+    "hqLocation": "Berlin, Germany",
+    "size": "501-1000"
+  },
+  {
+    "name": "Nuro",
+    "domain": "nuro.ai",
+    "leverSlug": "nuro",
+    "industries": ["Autonomous Vehicles", "Robotics", "Delivery"],
+    "hqLocation": "Mountain View, CA",
+    "size": "501-1000"
+  },
+  {
+    "name": "Zoox",
+    "domain": "zoox.com",
+    "leverSlug": "zoox",
+    "industries": ["Autonomous Vehicles", "Robotics", "Transportation"],
+    "hqLocation": "Foster City, CA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Waymo",
+    "domain": "waymo.com",
+    "leverSlug": "waymo",
+    "industries": ["Autonomous Vehicles", "AI", "Transportation"],
+    "hqLocation": "Mountain View, CA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Rivian",
+    "domain": "rivian.com",
+    "leverSlug": "rivian",
+    "industries": ["Electric Vehicles", "Manufacturing", "Automotive"],
+    "hqLocation": "Normal, IL",
+    "size": "10001+"
+  },
+  {
+    "name": "Lucid Motors",
+    "domain": "lucidmotors.com",
+    "leverSlug": "lucidmotors",
+    "industries": ["Electric Vehicles", "Manufacturing", "Automotive"],
+    "hqLocation": "Newark, CA",
+    "size": "5001-10000"
+  },
+  {
+    "name": "ChargePoint",
+    "domain": "chargepoint.com",
+    "leverSlug": "chargepoint",
+    "industries": ["Electric Vehicles", "Energy", "Infrastructure"],
+    "hqLocation": "Campbell, CA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Sunrun",
+    "domain": "sunrun.com",
+    "leverSlug": "sunrun",
+    "industries": ["Solar Energy", "Renewable Energy", "Utilities"],
+    "hqLocation": "San Francisco, CA",
+    "size": "5001-10000"
+  },
+  {
+    "name": "Enphase Energy",
+    "domain": "enphase.com",
+    "leverSlug": "enphase",
+    "industries": ["Solar Energy", "Renewable Energy", "Hardware"],
+    "hqLocation": "Fremont, CA",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Commonwealth Fusion Systems",
+    "domain": "cfs.energy",
+    "leverSlug": "cfs",
+    "industries": ["Nuclear Energy", "Clean Energy", "Research"],
+    "hqLocation": "Devens, MA",
+    "size": "201-500"
+  },
+  {
+    "name": "Impossible Foods",
+    "domain": "impossiblefoods.com",
+    "leverSlug": "impossiblefoods",
+    "industries": ["Food Tech", "Consumer Goods", "Biotech"],
+    "hqLocation": "Redwood City, CA",
+    "size": "201-500"
+  },
+  {
+    "name": "Oatly",
+    "domain": "oatly.com",
+    "leverSlug": "oatly",
+    "industries": ["Food & Beverage", "Consumer Goods", "Sustainability"],
+    "hqLocation": "Malmo, Sweden",
+    "size": "501-1000"
+  },
+  {
+    "name": "Peloton",
+    "domain": "onepeloton.com",
+    "leverSlug": "peloton",
+    "industries": ["Fitness", "Consumer Electronics", "Media"],
+    "hqLocation": "New York, NY",
+    "size": "5001-10000"
+  },
+  {
+    "name": "Strava",
+    "domain": "strava.com",
+    "leverSlug": "strava",
+    "industries": ["Fitness", "Mobile Apps", "Social Media"],
+    "hqLocation": "San Francisco, CA",
+    "size": "201-500"
+  },
+  {
+    "name": "Calm",
+    "domain": "calm.com",
+    "leverSlug": "calm",
+    "industries": ["Mental Health", "Consumer Apps", "Wellness"],
+    "hqLocation": "San Francisco, CA",
+    "size": "201-500"
+  },
+  {
+    "name": "Headspace",
+    "domain": "headspace.com",
+    "leverSlug": "headspace",
+    "industries": ["Mental Health", "Consumer Apps", "Wellness"],
+    "hqLocation": "Santa Monica, CA",
+    "size": "501-1000"
+  },
+  {
+    "name": "Noom",
+    "domain": "noom.com",
+    "leverSlug": "noom",
+    "industries": ["Digital Health", "Weight Management", "Consumer Apps"],
+    "hqLocation": "New York, NY",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Spring Health",
+    "domain": "springhealth.com",
+    "ashbySlug": "springhealth",
+    "industries": ["Mental Health", "Digital Health", "Employee Benefits"],
+    "hqLocation": "New York, NY",
+    "size": "501-1000"
+  },
+  {
+    "name": "Sword Health",
+    "domain": "swordhealth.com",
+    "ashbySlug": "swordhealth",
+    "industries": ["Digital Health", "Physical Therapy", "Healthcare"],
+    "hqLocation": "New York, NY",
+    "size": "201-500"
+  },
+  {
+    "name": "Garner Health",
+    "domain": "getgarner.com",
+    "ashbySlug": "garner",
+    "industries": ["Healthcare", "Health Insurance", "Benefits"],
+    "hqLocation": "New York, NY",
+    "size": "51-200"
+  },
+  {
+    "name": "Oscar Health",
+    "domain": "hioscar.com",
+    "leverSlug": "oscar",
+    "industries": ["Health Insurance", "Digital Health", "Healthcare"],
+    "hqLocation": "New York, NY",
+    "size": "1001-5000"
+  },
+  {
+    "name": "Devoted Health",
+    "domain": "devoted.com",
+    "leverSlug": "devoted",
+    "industries": ["Health Insurance", "Healthcare", "Medicare"],
+    "hqLocation": "Waltham, MA",
+    "size": "501-1000"
+  },
+  {
+    "name": "Stripe Press",
+    "domain": "press.stripe.com",
+    "leverSlug": "stripepress",
+    "industries": ["Publishing", "Books", "Technology"],
+    "hqLocation": "San Francisco, CA",
+    "size": "1-50"
+  },
+  {
+    "name": "Substack",
+    "domain": "substack.com",
+    "ashbySlug": "substack",
+    "industries": ["Media", "Newsletter", "Publishing"],
+    "hqLocation": "San Francisco, CA",
+    "size": "51-200"
+  },
+  {
+    "name": "Medium",
+    "domain": "medium.com",
+    "leverSlug": "medium",
+    "industries": ["Media", "Publishing", "Content Platform"],
+    "hqLocation": "San Francisco, CA",
+    "size": "201-500"
+  },
+  {
+    "name": "Axios",
+    "domain": "axios.com",
+    "leverSlug": "axios",
+    "industries": ["Media", "News", "Journalism"],
+    "hqLocation": "Arlington, VA",
+    "size": "201-500"
+  },
+  {
+    "name": "The Athletic",
+    "domain": "theathletic.com",
+    "leverSlug": "theathletic",
+    "industries": ["Media", "Sports Journalism", "Subscription"],
+    "hqLocation": "San Francisco, CA",
+    "size": "201-500"
+  },
+  {
+    "name": "Genius Sports",
+    "domain": "geniussports.com",
+    "leverSlug": "geniussports",
+    "industries": ["Sports Tech", "Data Analytics", "Betting"],
+    "hqLocation": "London, UK",
+    "size": "1001-5000"
+  }
+]
