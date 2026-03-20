@@ -17,6 +17,7 @@ import { userContext } from './middleware/user-context.js';
 import { createBootstrapMiddleware } from './middleware/bootstrap.js';
 import { createUsersRouter } from './routes/users.js';
 import { createSetupRouter } from './routes/setup.js';
+import { createConfigRouter } from './routes/config.js';
 import { runAllSources } from '../sources/index.js';
 import { scoreJobs } from '../scorer/index.js';
 import { discoverCompaniesViaAi, probeCompany } from '../sources/discovery.js';
@@ -269,6 +270,7 @@ app.use('/api/documents', createDocumentsRouter(queries));
 app.use('/api/profiles', createProfilesRouter(queries));
 app.use('/api/score', createScoreRouter(queries));
 app.use('/api/enrich', createEnrichRouter(queries, db));
+app.use('/api/config', createConfigRouter(queries));
 
 app.use(errorHandler);
 
