@@ -43,7 +43,7 @@ export function JobList({ jobs, selectedId, onSelect, filters, onFiltersChange }
           placeholder="Search jobs, companies..."
           value={filters.search || ''}
           onChange={(e) => onFiltersChange({ ...filters, search: e.target.value || undefined, page: 1 })}
-          className="w-full bg-[#0f172a]/80 border border-border-subtle rounded-lg py-2 px-3 pl-8 text-text-primary text-xs outline-none focus:border-accent-indigo/40 transition-colors placeholder:text-[#334155]"
+          className="w-full bg-bg-tertiary/80 border border-border-subtle rounded-lg py-2 px-3 pl-8 text-text-primary text-xs outline-none focus:border-accent-indigo/40 transition-colors placeholder:text-text-dim"
           style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cpath d='m21 21-4.3-4.3'%3E%3C/path%3E%3C/svg%3E")`,
             backgroundRepeat: 'no-repeat',

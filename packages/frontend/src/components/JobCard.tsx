@@ -51,8 +51,8 @@ export function JobCard({ job, isActive, onClick }: JobCardProps) {
       onClick={onClick}
       className={`relative overflow-hidden rounded-[10px] p-3 px-3.5 mb-1.5 cursor-pointer transition-all duration-200 border
         ${isActive
-          ? 'border-accent-indigo/50 bg-gradient-to-br from-accent-indigo/[0.08] to-[#0f172a]/90 shadow-[0_0_20px_rgba(99,102,241,0.08),inset_0_0_20px_rgba(99,102,241,0.03)]'
-          : 'border-border-subtle bg-gradient-to-br from-[#0f172a]/80 to-[#0f172a]/40 hover:border-accent-indigo/30 hover:bg-gradient-to-br hover:from-[#0f172a]/90 hover:to-bg-card/40 hover:translate-x-0.5'
+          ? 'border-accent-indigo/50 bg-gradient-to-br from-accent-indigo/[0.08] to-bg-tertiary/90 shadow-[0_0_20px_rgba(99,102,241,0.08),inset_0_0_20px_rgba(99,102,241,0.03)]'
+          : 'border-border-subtle bg-gradient-to-br from-bg-tertiary/80 to-bg-tertiary/40 hover:border-accent-indigo/30 hover:bg-gradient-to-br hover:from-bg-tertiary/90 hover:to-bg-card/40 hover:translate-x-0.5'
         }`}
     >
       {isActive && (
@@ -98,7 +98,7 @@ export function JobCard({ job, isActive, onClick }: JobCardProps) {
         </span>
       </div>
       {job.posted_at && (
-        <div className="text-[10px] text-[#334155] mt-1.5">
+        <div className="text-[10px] text-text-dim mt-1.5">
           Posted {job.posted_at} {job.applicants ? `\u00b7 ${job.applicants} applicants` : ''}
         </div>
       )}

@@ -166,7 +166,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
   const doc = state.document;
 
   return (
-    <div className="fixed inset-0 z-[100] bg-[#080b14] flex items-center justify-center">
+    <div className="fixed inset-0 z-[100] bg-bg-primary flex items-center justify-center">
       <div className="w-full max-w-xl mx-4">
         {/* Step indicator dots */}
         <div className="flex items-center justify-center gap-2 mb-8">
@@ -185,7 +185,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
         </div>
 
         {/* Card */}
-        <div className="bg-gradient-to-br from-[#0f172a]/90 to-[#0c1120] border border-border-subtle rounded-2xl p-8 shadow-[0_16px_64px_rgba(0,0,0,0.5)]">
+        <div className="bg-gradient-to-br from-bg-tertiary/90 to-bg-overlay border border-border-subtle rounded-2xl p-8 shadow-[0_16px_64px_rgba(0,0,0,0.5)]">
           {error && (
             <div className="mb-5 px-4 py-2.5 rounded-lg text-xs font-medium bg-accent-red/10 text-accent-red-light border border-accent-red/20">
               {error}
@@ -195,7 +195,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
           {/* ── Step 1: Welcome ── */}
           {step === 1 && (
             <div>
-              <h1 className="text-2xl font-extrabold text-[#f1f5f9] tracking-tight mb-1">
+              <h1 className="text-2xl font-extrabold text-text-primary tracking-tight mb-1">
                 Welcome to JobGrid
               </h1>
               <p className="text-xs text-text-muted mb-6">
@@ -224,7 +224,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                       onClick={() => setState((s) => ({ ...s, avatarColor: c }))}
                       className={`w-9 h-9 rounded-full transition-all ${
                         state.avatarColor === c
-                          ? 'ring-2 ring-white/30 ring-offset-2 ring-offset-[#0f172a] scale-110'
+                          ? 'ring-2 ring-white/30 ring-offset-2 ring-offset-bg-tertiary scale-110'
                           : 'hover:scale-105 opacity-70 hover:opacity-100'
                       }`}
                       style={{ backgroundColor: c }}
@@ -246,7 +246,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
           {/* ── Step 2: Upload Resume ── */}
           {step === 2 && (
             <div>
-              <h2 className="text-xl font-extrabold text-[#f1f5f9] tracking-tight mb-1">
+              <h2 className="text-xl font-extrabold text-text-primary tracking-tight mb-1">
                 Upload Your Resume
               </h2>
               <p className="text-xs text-text-muted mb-6">
@@ -326,7 +326,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
           {/* ── Step 3: Review Skills ── */}
           {step === 3 && (
             <div>
-              <h2 className="text-xl font-extrabold text-[#f1f5f9] tracking-tight mb-1">
+              <h2 className="text-xl font-extrabold text-text-primary tracking-tight mb-1">
                 Review Your Skills
               </h2>
               <p className="text-xs text-text-muted mb-5">
@@ -400,7 +400,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
           {/* ── Step 4: Target Roles ── */}
           {step === 4 && (
             <div>
-              <h2 className="text-xl font-extrabold text-[#f1f5f9] tracking-tight mb-1">
+              <h2 className="text-xl font-extrabold text-text-primary tracking-tight mb-1">
                 Target Roles
               </h2>
               <p className="text-xs text-text-muted mb-5">
@@ -453,7 +453,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
           {/* ── Step 5: Target Locations ── */}
           {step === 5 && (
             <div>
-              <h2 className="text-xl font-extrabold text-[#f1f5f9] tracking-tight mb-1">
+              <h2 className="text-xl font-extrabold text-text-primary tracking-tight mb-1">
                 Target Locations
               </h2>
               <p className="text-xs text-text-muted mb-5">
@@ -521,7 +521,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
           {/* ── Step 6: Confirmation ── */}
           {step === 6 && (
             <div>
-              <h2 className="text-xl font-extrabold text-[#f1f5f9] tracking-tight mb-1">
+              <h2 className="text-xl font-extrabold text-text-primary tracking-tight mb-1">
                 You're All Set
               </h2>
               <p className="text-xs text-text-muted mb-6">

@@ -25,7 +25,7 @@ export function DocumentUpload() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <h2 className="text-[22px] font-bold text-[#f1f5f9] tracking-tight mb-1">Documents</h2>
+      <h2 className="text-[22px] font-bold text-text-primary tracking-tight mb-1">Documents</h2>
       <p className="text-xs text-text-muted mb-6">
         Upload your resume and LinkedIn PDF to auto-extract skills, titles, and certifications.
       </p>
@@ -129,7 +129,7 @@ function UploadZone({ label, doc, uploading, onUpload, onRemove }: UploadZonePro
   );
 
   return (
-    <div className="bg-gradient-to-br from-[#0f172a]/70 to-[#0f172a]/30 border border-border-subtle rounded-xl p-5">
+    <div className="bg-gradient-to-br from-bg-tertiary/70 to-bg-tertiary/30 border border-border-subtle rounded-xl p-5">
       <div className="text-[9px] font-bold uppercase tracking-[1.2px] text-text-dim mb-3">{label}</div>
 
       {/* Drop area */}

@@ -1,16 +1,52 @@
 @import "tailwindcss";
 
+/* Light theme (default) */
+:root {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #f1f5f9;
+  --bg-tertiary: #e2e8f0;
+  --bg-card: #ffffff;
+  --border-color: #cbd5e1;
+  --border-subtle: rgba(203, 213, 225, 0.4);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --text-dim: #94a3b8;
+  --bg-gradient-base: #e2e8f0;
+  --bg-overlay: #f1f5f9;
+  --shadow-color: rgba(0, 0, 0, 0.08);
+}
+
+/* Dark theme */
+.dark {
+  --bg-primary: #080b14;
+  --bg-secondary: #0a0f1e;
+  --bg-tertiary: #0f172a;
+  --bg-card: #1e293b;
+  --border-color: #334155;
+  --border-subtle: rgba(51, 65, 85, 0.4);
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --text-dim: #475569;
+  --bg-gradient-base: #0f172a;
+  --bg-overlay: #0c1120;
+  --shadow-color: rgba(0, 0, 0, 0.5);
+}
+
 @theme {
-  --color-bg-primary: #080b14;
-  --color-bg-secondary: #0a0f1e;
-  --color-bg-tertiary: #0f172a;
-  --color-bg-card: #1e293b;
-  --color-border: #334155;
-  --color-border-subtle: rgba(51, 65, 85, 0.4);
-  --color-text-primary: #e2e8f0;
-  --color-text-secondary: #94a3b8;
-  --color-text-muted: #64748b;
-  --color-text-dim: #475569;
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-secondary: var(--bg-secondary);
+  --color-bg-tertiary: var(--bg-tertiary);
+  --color-bg-card: var(--bg-card);
+  --color-border: var(--border-color);
+  --color-border-subtle: var(--border-subtle);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-text-dim: var(--text-dim);
+  --color-bg-gradient-base: var(--bg-gradient-base);
+  --color-bg-overlay: var(--bg-overlay);
   --color-accent-indigo: #6366f1;
   --color-accent-indigo-light: #a5b4fc;
   --color-accent-green: #10b981;

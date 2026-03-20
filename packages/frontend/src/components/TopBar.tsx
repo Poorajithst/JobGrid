@@ -1,6 +1,8 @@
 import { scrapeApi, profilesApi, scoreApi, enrichApi } from '../api/client';
 import type { Stats, IpeStats, Profile } from '../api/types';
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { useTheme } from '../context/ThemeContext';
+import { Sun, Moon } from 'lucide-react';
 
 interface TopBarProps {
   stats: (Stats & Partial<IpeStats>) | null;
@@ -13,6 +15,7 @@ interface TopBarProps {
 }
 
 export function TopBar({ stats, onScrapeComplete, activeProfileId, onProfileChange, userSwitcher, scoreTier, onScoreTierChange }: TopBarProps) {
+  const { theme, toggleTheme } = useTheme();
   const [scraping, setScraping] = useState(false);
   const [profiles, setProfiles] = useState<Profile[]>([]);
 
@@ -154,7 +157,7 @@ export function TopBar({ stats, onScrapeComplete, activeProfileId, onProfileChan
       : 'Enrich JDs';
 
   return (
-    <div className="bg-gradient-to-b from-[#0f1629] to-[#0c1120] border-b border-accent-indigo/15 px-6 py-3.5 flex justify-between items-center relative">
+    <div className="bg-gradient-to-b from-bg-tertiary to-bg-overlay border-b border-accent-indigo/15 px-6 py-3.5 flex justify-between items-center relative">
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent-indigo/40 to-transparent" />
       <div className="flex items-center gap-5">
         {userSwitcher}
@@ -166,7 +169,7 @@ export function TopBar({ stats, onScrapeComplete, activeProfileId, onProfileChan
         <select
           value={activeProfileId ?? ''}
           onChange={(e) => onProfileChange(e.target.value ? Number(e.target.value) : null)}
-          className="bg-[#0f172a]/80 border border-border-subtle rounded-lg py-1.5 px-2.5 text-xs text-text-primary outline-none focus:border-accent-indigo/40 appearance-none cursor-pointer min-w-[140px]"
+          className="bg-bg-tertiary/80 border border-border-subtle rounded-lg py-1.5 px-2.5 text-xs text-text-primary outline-none focus:border-accent-indigo/40 appearance-none cursor-pointer min-w-[140px]"
         >
           <option value="">No profile</option>
           {profiles.map((p) => (
@@ -184,6 +187,13 @@ export function TopBar({ stats, onScrapeComplete, activeProfileId, onProfileChan
         </div>
       </div>
       <div className="flex items-center gap-3">
+        <button
+          onClick={toggleTheme}
+          className="p-1.5 rounded-lg text-text-muted hover:text-text-primary hover:bg-bg-card/50 transition-all"
+          title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+        >
+          {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+        </button>
         <span className="text-text-dim text-xs">
           Last scraped{' '}
           <span className="text-text-muted">
@@ -225,7 +235,7 @@ export function TopBar({ stats, onScrapeComplete, activeProfileId, onProfileChan
             disabled={scoring}
             className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold shadow-[0_2px_8px_rgba(16,185,129,0.3)] hover:shadow-[0_4px_16px_rgba(16,185,129,0.4)] hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed
               ${scoreTier === 'analytic'
-                ? 'bg-accent-green text-white ring-2 ring-accent-green-light ring-offset-1 ring-offset-[#0f1629]'
+                ? 'bg-accent-green text-white ring-2 ring-accent-green-light ring-offset-1 ring-offset-bg-tertiary'
                 : 'bg-gradient-to-br from-accent-green to-[#059669] text-white'
               }`}
           >
@@ -248,7 +258,7 @@ export function TopBar({ stats, onScrapeComplete, activeProfileId, onProfileChan
             title={!hasScored && !aiResult ? 'Run Analytic Score first' : undefined}
             className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold shadow-[0_2px_8px_rgba(168,85,247,0.3)] hover:shadow-[0_4px_16px_rgba(168,85,247,0.4)] hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed
               ${scoreTier === 'ai'
-                ? 'bg-accent-purple text-white ring-2 ring-[#a78bfa] ring-offset-1 ring-offset-[#0f1629]'
+                ? 'bg-accent-purple text-white ring-2 ring-[#a78bfa] ring-offset-1 ring-offset-bg-tertiary'
                 : 'bg-gradient-to-br from-accent-purple to-[#7c3aed] text-white'
               }`}
           >

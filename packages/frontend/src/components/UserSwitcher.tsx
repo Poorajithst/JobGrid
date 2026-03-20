@@ -53,7 +53,7 @@ export function UserSwitcher({ activeUser, users, onSwitch, onAddUser, onRefresh
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute top-full left-0 mt-2 w-56 bg-[#0c1120] border border-border-subtle rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] z-50 overflow-hidden">
+        <div className="absolute top-full left-0 mt-2 w-56 bg-bg-overlay border border-border-subtle rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] z-50 overflow-hidden">
           <div className="px-3.5 py-2.5 border-b border-border-subtle">
             <div className="text-[9px] font-bold uppercase tracking-[1.2px] text-text-dim">Switch User</div>
           </div>

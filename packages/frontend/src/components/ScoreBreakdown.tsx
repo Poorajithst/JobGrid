@@ -37,7 +37,7 @@ function barGlow(score: number): string {
 
 export function ScoreBreakdown({ scores, weights }: ScoreBreakdownProps) {
   return (
-    <div className="bg-gradient-to-br from-[#0f172a]/70 to-[#0f172a]/30 border border-border-subtle rounded-xl p-4 px-[18px]">
+    <div className="bg-gradient-to-br from-bg-tertiary/70 to-bg-tertiary/30 border border-border-subtle rounded-xl p-4 px-[18px]">
       {/* Overall IPE score */}
       <div className="flex items-center justify-between mb-4">
         <div className="text-[9px] font-bold uppercase tracking-[1.2px] text-text-dim">IPE Score Breakdown</div>

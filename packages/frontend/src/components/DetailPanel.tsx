@@ -177,11 +177,11 @@ export function DetailPanel({ job, onStatusChange, onNotesChange, activeProfileI
       {/* Header */}
       <div className="flex justify-between items-start mb-5">
         <div>
-          <h2 className="text-[22px] font-bold text-[#f1f5f9] tracking-tight">{job.title}</h2>
+          <h2 className="text-[22px] font-bold text-text-primary tracking-tight">{job.title}</h2>
           <div className="text-sm text-text-muted mt-1">
             {job.company} <span className="text-text-dim mx-1.5">&middot;</span> {job.location || 'N/A'}
           </div>
-          <div className="text-[11px] text-[#334155] mt-1">
+          <div className="text-[11px] text-text-dim mt-1">
             {job.posted_at ? `Posted ${job.posted_at}` : ''} {job.applicants ? `\u00b7 ${job.applicants} applicants` : ''}
           </div>
         </div>
@@ -212,7 +212,7 @@ export function DetailPanel({ job, onStatusChange, onNotesChange, activeProfileI
 
       {/* AI Assessment section */}
       {scores?.ai_validated && (
-        <div className="bg-gradient-to-br from-[#0f172a]/70 to-[#0f172a]/30 border border-accent-purple/20 rounded-xl p-4 px-[18px] mb-3">
+        <div className="bg-gradient-to-br from-bg-tertiary/70 to-bg-tertiary/30 border border-accent-purple/20 rounded-xl p-4 px-[18px] mb-3">
           <div className="flex items-center gap-2 mb-2">
             <div className="text-[9px] font-bold uppercase tracking-[1.2px] text-text-dim">AI Assessment</div>
             <span className={`px-2 py-0.5 rounded text-[10px] font-semibold border ${scores.ai_agrees ? 'bg-accent-green/10 text-accent-green-light border-accent-green/20' : 'bg-accent-red/10 text-accent-red-light border-accent-red/20'}`}>
@@ -269,12 +269,12 @@ export function DetailPanel({ job, onStatusChange, onNotesChange, activeProfileI
 
       {/* Description with keyword highlighting */}
       {job.description ? (
-        <div className="bg-gradient-to-br from-[#0f172a]/70 to-[#0f172a]/30 border border-border-subtle rounded-xl p-4 px-[18px] mb-3">
+        <div className="bg-gradient-to-br from-bg-tertiary/70 to-bg-tertiary/30 border border-border-subtle rounded-xl p-4 px-[18px] mb-3">
           <div className="text-[9px] font-bold uppercase tracking-[1.2px] text-text-dim mb-2">Job Description</div>
           <div className={`text-xs text-text-muted leading-relaxed ${!showFullDesc && job.description.length > 500 ? 'relative' : ''}`}>
             {descriptionContent}
             {!showFullDesc && job.description.length > 500 && (
-              <div className="absolute bottom-0 left-0 right-0 h-[30px] bg-gradient-to-t from-[#0a0f1e]/95 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 h-[30px] bg-gradient-to-t from-bg-secondary/95 to-transparent" />
             )}
           </div>
           {job.description.length > 500 && (
@@ -287,7 +287,7 @@ export function DetailPanel({ job, onStatusChange, onNotesChange, activeProfileI
           )}
         </div>
       ) : (
-        <div className="bg-gradient-to-br from-[#0f172a]/70 to-[#0f172a]/30 border border-border-subtle rounded-xl p-4 px-[18px] mb-3">
+        <div className="bg-gradient-to-br from-bg-tertiary/70 to-bg-tertiary/30 border border-border-subtle rounded-xl p-4 px-[18px] mb-3">
           <div className="text-[9px] font-bold uppercase tracking-[1.2px] text-text-dim mb-2">Job Description</div>
           <div className="text-xs text-text-dim italic mb-2">No description available</div>
           <button
@@ -325,7 +325,7 @@ export function DetailPanel({ job, onStatusChange, onNotesChange, activeProfileI
 
       {/* Outreach Result */}
       {outreachContent && (
-        <div className="bg-gradient-to-br from-[#0f172a]/70 to-[#0f172a]/30 border border-accent-indigo/20 rounded-xl p-4 px-[18px] mb-3">
+        <div className="bg-gradient-to-br from-bg-tertiary/70 to-bg-tertiary/30 border border-accent-indigo/20 rounded-xl p-4 px-[18px] mb-3">
           <div className="flex justify-between items-center mb-2">
             <div className="text-[9px] font-bold uppercase tracking-[1.2px] text-text-dim">Generated Draft</div>
             <button
@@ -340,7 +340,7 @@ export function DetailPanel({ job, onStatusChange, onNotesChange, activeProfileI
       )}
 
       {/* Notes */}
-      <div className="bg-gradient-to-br from-[#0f172a]/70 to-[#0f172a]/30 border border-border-subtle rounded-xl p-4 px-[18px]">
+      <div className="bg-gradient-to-br from-bg-tertiary/70 to-bg-tertiary/30 border border-border-subtle rounded-xl p-4 px-[18px]">
         <div className="text-[9px] font-bold uppercase tracking-[1.2px] text-text-dim mb-2">Notes</div>
         {editingNotes ? (
           <div>
@@ -358,7 +358,7 @@ export function DetailPanel({ job, onStatusChange, onNotesChange, activeProfileI
         ) : (
           <div
             onClick={() => setEditingNotes(true)}
-            className={`text-xs cursor-pointer min-h-[40px] ${job.notes ? 'text-text-secondary' : 'text-[#1e293b] italic'}`}
+            className={`text-xs cursor-pointer min-h-[40px] ${job.notes ? 'text-text-secondary' : 'text-text-dim italic'}`}
           >
             {job.notes || 'Click to add notes...'}
           </div>
@@ -383,7 +383,7 @@ function MetricCard({ label, value, color, large }: { label: string; value: stri
   };
 
   return (
-    <div className={`bg-gradient-to-br from-[#0f172a]/90 to-[#0f172a]/50 border border-border-subtle rounded-xl p-4 text-center relative overflow-hidden before:absolute before:top-0 before:left-1/2 before:-translate-x-1/2 before:w-3/5 before:h-px ${borderMap[color]}`}>
+    <div className={`bg-gradient-to-br from-bg-tertiary/90 to-bg-tertiary/50 border border-border-subtle rounded-xl p-4 text-center relative overflow-hidden before:absolute before:top-0 before:left-1/2 before:-translate-x-1/2 before:w-3/5 before:h-px ${borderMap[color]}`}>
       <div className={`${large ? 'text-[28px]' : 'text-[18px]'} font-extrabold mb-0.5 ${colorMap[color]} capitalize`}>{value}</div>
       <div className="text-[10px] text-text-dim uppercase tracking-[1px] font-semibold">{label}</div>
     </div>
@@ -392,7 +392,7 @@ function MetricCard({ label, value, color, large }: { label: string; value: stri
 
 function SectionCard({ label, text, italic }: { label: string; text: string; italic?: boolean }) {
   return (
-    <div className="bg-gradient-to-br from-[#0f172a]/70 to-[#0f172a]/30 border border-border-subtle rounded-xl p-4 px-[18px] mb-3">
+    <div className="bg-gradient-to-br from-bg-tertiary/70 to-bg-tertiary/30 border border-border-subtle rounded-xl p-4 px-[18px] mb-3">
       <div className="text-[9px] font-bold uppercase tracking-[1.2px] text-text-dim mb-2">{label}</div>
       <div className={`text-[13px] text-text-secondary leading-relaxed ${italic ? 'italic text-accent-indigo-light' : ''}`}>{text}</div>
     </div>

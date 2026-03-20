@@ -16,9 +16,9 @@ interface SeedCompany {
 }
 
 function seedPath(relativePath: string): string {
-  // Resolve relative to project root (2 levels up from db/)
+  // Resolve relative to project root (4 levels up from src/db/ → src → backend → packages → root)
   const __dirname = dirname(fileURLToPath(import.meta.url));
-  return resolve(__dirname, '..', '..', '..', relativePath);
+  return resolve(__dirname, '..', '..', '..', '..', relativePath);
 }
 
 export function hydrateUserDictionary(userId: number, templateId: string): number {

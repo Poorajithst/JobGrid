@@ -169,7 +169,7 @@ export function ProfileManager({ onProfileActivated }: ProfileManagerProps) {
     <div className="max-w-3xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-[22px] font-bold text-[#f1f5f9] tracking-tight mb-1">Scoring Profiles</h2>
+          <h2 className="text-[22px] font-bold text-text-primary tracking-tight mb-1">Scoring Profiles</h2>
           <p className="text-xs text-text-muted">Configure how jobs are scored against your qualifications.</p>
         </div>
         {!editing && (
@@ -194,7 +194,7 @@ export function ProfileManager({ onProfileActivated }: ProfileManagerProps) {
           {profiles.map((p) => (
             <div
               key={p.id}
-              className="bg-gradient-to-br from-[#0f172a]/70 to-[#0f172a]/30 border border-border-subtle rounded-xl p-4 px-[18px] flex items-center justify-between"
+              className="bg-gradient-to-br from-bg-tertiary/70 to-bg-tertiary/30 border border-border-subtle rounded-xl p-4 px-[18px] flex items-center justify-between"
             >
               <div className="flex items-center gap-3">
                 <button
@@ -251,7 +251,7 @@ export function ProfileManager({ onProfileActivated }: ProfileManagerProps) {
 
       {/* Edit / Create form */}
       {editing && (
-        <div className="bg-gradient-to-br from-[#0f172a]/70 to-[#0f172a]/30 border border-border-subtle rounded-xl p-5 px-6">
+        <div className="bg-gradient-to-br from-bg-tertiary/70 to-bg-tertiary/30 border border-border-subtle rounded-xl p-5 px-6">
           <div className="text-[9px] font-bold uppercase tracking-[1.2px] text-text-dim mb-4">
             {editing.id ? 'Edit Profile' : 'New Profile'}
           </div>
