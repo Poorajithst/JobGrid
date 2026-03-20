@@ -8,17 +8,12 @@ const queries = createQueries(db);
 // Step 1: Create "Legacy PM" profile from hardcoded profile data
 console.log('Creating Legacy PM profile...');
 const profile = queries.insertProfile({
-  name: 'Legacy PM',
-  targetTitles: JSON.stringify(['Project Manager', 'Program Manager', 'Technical Program Manager', 'Infrastructure PM']),
-  targetSkills: JSON.stringify(['agile', 'scrum', 'python', 'sql', 'power bi', 'jira', 'safe']),
-  targetCerts: JSON.stringify(['capm', 'pmi-acp', 'safe']),
-  targetLocations: JSON.stringify(['Worcester, MA', 'Boston, MA', 'Remote']),
-  searchQueries: JSON.stringify([
-    '"project manager" Worcester MA',
-    '"program manager" Worcester MA',
-    '"technical program manager" Boston MA',
-    '"infrastructure PM" remote',
-  ]),
+  name: 'Legacy Profile',
+  targetTitles: JSON.stringify(['Software Engineer']),
+  targetSkills: JSON.stringify(['javascript', 'typescript', 'react', 'node.js']),
+  targetCerts: JSON.stringify([]),
+  targetLocations: JSON.stringify(['Remote']),
+  searchQueries: JSON.stringify(['software engineer']),
 });
 console.log(`Created profile: ${profile.name} (id: ${profile.id})`);
 

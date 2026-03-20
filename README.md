@@ -60,11 +60,7 @@ cp .env.example .env
 # Edit .env and add your GROQ_API_KEY
 
 # Set up database
-pnpm db:generate
-pnpm db:migrate
-
-# Seed target companies (13 Worcester/Boston area companies)
-cd packages/backend && pnpm db:seed && cd ../..
+cd packages/backend && pnpm db:migrate && cd ../..
 
 # Start backend (port 3001)
 cd packages/backend && pnpm start &
@@ -72,6 +68,15 @@ cd packages/backend && pnpm start &
 # Start frontend (port 5173)
 cd packages/frontend && pnpm dev
 ```
+
+On first run, the app will launch a **setup wizard** where you:
+1. Create your profile
+2. Choose a role archetype (PM/TPM, Software Engineer, Data Scientist, or Custom)
+3. Upload your resume (optional)
+4. Review and customize your skills
+5. Set target titles, locations, and preferences
+6. Load 200+ seed companies with ATS integrations
+7. Start your first job scan
 
 Open **http://localhost:5173** -- the onboarding wizard will guide you through setup.
 
@@ -239,7 +244,7 @@ pnpm dev:frontend         # Start frontend dev server
 # Database
 pnpm db:generate          # Generate Drizzle migrations
 pnpm db:migrate           # Run migrations
-pnpm db:seed              # Seed target companies
+# Companies are auto-loaded during first-run setup
 
 # Testing
 cd packages/backend && pnpm test       # Run all backend tests
@@ -252,7 +257,7 @@ cd packages/backend && pnpm start      # Start backend
 
 ## Adding Target Companies
 
-The system comes pre-seeded with 13 Worcester/Boston area companies. To add more:
+The setup wizard loads 200+ companies with verified ATS slugs. To add more:
 
 ```bash
 # Via API

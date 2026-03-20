@@ -21,11 +21,10 @@ describe('scrapeGoogleJobs', () => {
     };
 
     const results = await scrapeGoogleJobs(mockPage as any);
-    // 4 queries × 1 result each = 4 results
     expect(results.length).toBeGreaterThanOrEqual(1);
     expect(results[0].source).toBe('google-jobs');
     expect(results[0].atsId).toBeNull();
-    expect(mockPage.goto).toHaveBeenCalledTimes(4); // 4 search queries
+    expect(mockPage.goto).toHaveBeenCalledTimes(1); // 1 default search query
   });
 
   it('returns empty on timeout', async () => {

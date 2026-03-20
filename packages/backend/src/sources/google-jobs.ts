@@ -3,10 +3,7 @@ import { randomDelay } from '../browser/delay.js';
 import type { RawJob } from './greenhouse.js';
 
 const SEARCH_QUERIES = [
-  '"project manager" Worcester MA',
-  '"program manager" Worcester MA',
-  '"technical program manager" Boston MA',
-  '"infrastructure PM" remote',
+  'software engineer',
 ];
 
 export async function scrapeGoogleJobs(page: Page, searchQueries?: string[]): Promise<RawJob[]> {

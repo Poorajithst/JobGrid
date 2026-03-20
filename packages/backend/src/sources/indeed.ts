@@ -8,7 +8,7 @@ const DAYS_POSTED = process.env.DAYS_POSTED || '1';
 export async function scrapeIndeed(page: Page, searchQueries?: string[]): Promise<RawJob[]> {
   const queries = searchQueries && searchQueries.length > 0
     ? searchQueries
-    : ['project+manager Worcester MA'];
+    : ['software engineer'];
 
   const allResults: RawJob[] = [];
 
