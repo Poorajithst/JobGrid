@@ -18,6 +18,7 @@ import { createBootstrapMiddleware } from './middleware/bootstrap.js';
 import { createUsersRouter } from './routes/users.js';
 import { createSetupRouter } from './routes/setup.js';
 import { createConfigRouter } from './routes/config.js';
+import { runExistingDbMigration } from '../db/migrate-dictionary.js';
 import { runAllSources } from '../sources/index.js';
 import { scoreJobs } from '../scorer/index.js';
 import { discoverCompaniesViaAi, probeCompany } from '../sources/discovery.js';
@@ -30,6 +31,7 @@ import { randomDelay } from '../browser/delay.js';
 
 const PORT = parseInt(process.env.PORT || '3001', 10);
 const queries = createQueries(db);
+runExistingDbMigration();
 
 const app = express();
 
