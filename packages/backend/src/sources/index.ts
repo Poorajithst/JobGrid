@@ -7,6 +7,7 @@ import { scrapeZipRecruiter } from './ziprecruiter.js';
 import { getPage, closeBrowser } from '../browser/instance.js';
 
 const MAX_APPLICANTS = parseInt(process.env.MAX_APPLICANTS || '30', 10);
+const MAX_SEARCH_QUERIES = 8;
 
 export interface SourceResult {
   jobs: RawJob[];
@@ -16,7 +17,7 @@ export interface SourceResult {
 
 export async function runAllSources(companies: CompanyInput[], searchQueries?: string[]): Promise<SourceResult> {
   const allJobs: RawJob[] = [];
-  const sourcesRun: string[] = [];
+  const sourcesRunSet = new Set<string>();
   const errors: string[] = [];
 
   // 1. API sources in parallel
@@ -25,39 +26,61 @@ export async function runAllSources(companies: CompanyInput[], searchQueries?: s
       fetchGreenhouse(companies),
       fetchLever(companies),
     ]);
-    sourcesRun.push('greenhouse', 'lever'); // Track attempted, not just results
+    sourcesRunSet.add('greenhouse');
+    sourcesRunSet.add('lever'); // Track attempted, not just results
     allJobs.push(...ghJobs);
     allJobs.push(...leverJobs);
   } catch (err) {
     errors.push(`API sources: ${err}`);
   }
 
-  // 2. Playwright scrapers (sequential)
+  // 2. Playwright scrapers (sequential, loop over search queries)
   try {
     const page = await getPage();
+    const queryList = (searchQueries || []).slice(0, MAX_SEARCH_QUERIES);
+    const seenLinks = new Set<string>();
 
-    try {
-      sourcesRun.push('indeed');
-      const indeedJobs = await scrapeIndeed(page, searchQueries);
-      allJobs.push(...indeedJobs);
-    } catch (err) {
-      errors.push(`Indeed: ${err}`);
-    }
+    for (const query of queryList.length > 0 ? queryList : [undefined]) {
+      const queryArr = query ? [query] : undefined;
 
-    try {
-      sourcesRun.push('google-jobs');
-      const googleJobs = await scrapeGoogleJobs(page, searchQueries);
-      allJobs.push(...googleJobs);
-    } catch (err) {
-      errors.push(`Google Jobs: ${err}`);
-    }
+      try {
+        sourcesRunSet.add('indeed');
+        const indeedJobs = await scrapeIndeed(page, queryArr);
+        for (const job of indeedJobs) {
+          if (!seenLinks.has(job.link)) {
+            seenLinks.add(job.link);
+            allJobs.push(job);
+          }
+        }
+      } catch (err) {
+        errors.push(`Indeed (${query || 'default'}): ${err}`);
+      }
 
-    try {
-      sourcesRun.push('ziprecruiter');
-      const zipJobs = await scrapeZipRecruiter(page, searchQueries);
-      allJobs.push(...zipJobs);
-    } catch (err) {
-      errors.push(`ZipRecruiter: ${err}`);
+      try {
+        sourcesRunSet.add('google-jobs');
+        const googleJobs = await scrapeGoogleJobs(page, queryArr);
+        for (const job of googleJobs) {
+          if (!seenLinks.has(job.link)) {
+            seenLinks.add(job.link);
+            allJobs.push(job);
+          }
+        }
+      } catch (err) {
+        errors.push(`Google Jobs (${query || 'default'}): ${err}`);
+      }
+
+      try {
+        sourcesRunSet.add('ziprecruiter');
+        const zipJobs = await scrapeZipRecruiter(page, queryArr);
+        for (const job of zipJobs) {
+          if (!seenLinks.has(job.link)) {
+            seenLinks.add(job.link);
+            allJobs.push(job);
+          }
+        }
+      } catch (err) {
+        errors.push(`ZipRecruiter (${query || 'default'}): ${err}`);
+      }
     }
 
     await page.context().close();
@@ -95,5 +118,5 @@ export async function runAllSources(companies: CompanyInput[], searchQueries?: s
     console.warn('Source errors:', errors);
   }
 
-  return { jobs: finalDeduped, sourcesRun, errors };
+  return { jobs: finalDeduped, sourcesRun: Array.from(sourcesRunSet), errors };
 }
