@@ -37,6 +37,7 @@ export function createScoreRouter(queries: ReturnType<typeof createQueries>) {
         targetLocations: profile.targetLocations ? JSON.parse(profile.targetLocations) : [],
         experienceYears: profile.minExperienceYears || 0,
         titleSynonyms: profile.titleSynonyms ? JSON.parse(profile.titleSynonyms) : {},
+        excludeTitles: profile.excludeTitles ? JSON.parse(profile.excludeTitles) : [],
         weights: {
           freshness: profile.freshnessWeight,
           skill: profile.skillWeight,

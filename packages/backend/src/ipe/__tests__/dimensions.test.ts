@@ -60,23 +60,39 @@ describe('Title Alignment Score', () => {
     expect(scoreTitleAlignment(['Project Manager'], 'Project Manager', {})).toBe(100);
   });
 
-  it('scores 85 for contains match', () => {
-    expect(scoreTitleAlignment(['Project Manager'], 'Senior Project Manager', {})).toBe(85);
+  it('scores 90 for contains match (order-independent wins)', () => {
+    expect(scoreTitleAlignment(['Project Manager'], 'Senior Project Manager', {})).toBe(90);
   });
 
-  it('scores 60 for synonym with word overlap', () => {
-    const synonyms = { 'project manager': ['program manager', 'pm'] };
-    // "Program Manager" shares "Manager" with "Project Manager" (50% word overlap -> 60)
-    expect(scoreTitleAlignment(['Project Manager'], 'Program Manager', synonyms)).toBe(60);
-  });
-
-  it('scores 40 for pure synonym match', () => {
+  it('scores 100 for synonym match (was 40)', () => {
     const synonyms = { 'scrum master': ['agile coach'] };
-    expect(scoreTitleAlignment(['Scrum Master'], 'Agile Coach', synonyms)).toBe(40);
+    expect(scoreTitleAlignment(['Scrum Master'], 'Agile Coach', synonyms)).toBe(100);
+  });
+
+  it('scores 90 for order-independent word match', () => {
+    expect(scoreTitleAlignment(
+      ['Technical Project Manager'],
+      'Project Manager, Technical',
+      {}
+    )).toBe(90);
+  });
+
+  it('scores 0 for exclude title match', () => {
+    expect(scoreTitleAlignment(
+      ['Technical Project Manager'],
+      'Account Manager',
+      {},
+      ['Account Manager', 'Sales Manager']
+    )).toBe(0);
   });
 
   it('scores 0 for no match', () => {
     expect(scoreTitleAlignment(['Project Manager'], 'Chef', {})).toBe(0);
+  });
+
+  it('works with empty excludes', () => {
+    const synonyms = { 'product manager': ['product owner'] };
+    expect(scoreTitleAlignment(['Product Manager'], 'Product Owner', synonyms, [])).toBe(100);
   });
 });
 

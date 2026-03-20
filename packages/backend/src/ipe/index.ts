@@ -13,6 +13,7 @@ export interface ProfileConfig {
   targetLocations: string[];
   experienceYears: number;
   titleSynonyms: Record<string, string[]>;
+  excludeTitles?: string[];
   weights: {
     freshness: number;
     skill: number;
@@ -52,7 +53,7 @@ export function calculateIpeScore(profile: ProfileConfig, job: JobData): IpeResu
     profile.targetSkills, job.description || ''
   );
   const titleAlignmentScore = scoreTitleAlignment(
-    profile.targetTitles, job.title, profile.titleSynonyms
+    profile.targetTitles, job.title, profile.titleSynonyms, profile.excludeTitles || []
   );
   const certMatchScore = scoreCertMatch(profile.targetCerts, job.description || '');
   const competitionScore = scoreCompetition(job.applicants);

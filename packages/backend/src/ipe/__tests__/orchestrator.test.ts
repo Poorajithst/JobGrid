@@ -28,7 +28,7 @@ describe('IPE Scoring Orchestrator', () => {
     expect(result.ipeScore).toBeGreaterThan(70);
     expect(result.dimensions.freshnessScore).toBeGreaterThan(90);
     expect(result.dimensions.skillMatchScore).toBeGreaterThan(50);
-    expect(result.dimensions.titleAlignmentScore).toBe(85);
+    expect(result.dimensions.titleAlignmentScore).toBe(90);
     expect(result.dimensions.locationMatchScore).toBe(100);
     expect(result.matchedSkills.length).toBeGreaterThan(2);
   });
