@@ -94,6 +94,15 @@ export function createSetupRouter(queries: ReturnType<typeof createQueries>) {
     } catch (err) { next(err); }
   });
 
+  // GET skills — fetch all dictionary terms for a user
+  router.get('/skills', (req, res, next) => {
+    try {
+      const userId = parseInt(req.query.userId as string, 10) || (req as any).userId;
+      const terms = queries.getDictionaryTermsByUser(userId);
+      res.json({ terms });
+    } catch (err) { next(err); }
+  });
+
   // Step 4: Customize skills
   router.post('/skills', (req, res, next) => {
     try {

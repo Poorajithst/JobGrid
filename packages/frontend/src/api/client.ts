@@ -58,6 +58,9 @@ export const setupApi = {
     return api.post('/setup/documents', form).then(r => r.data);
   },
 
+  getSkills: (userId: number) =>
+    api.get('/setup/skills', { params: { userId } }).then(r => r.data),
+
   updateSkills: (data: { userId: number; add?: { category: string; term: string }[]; remove?: { category: string; term: string }[] }) =>
     api.post('/setup/skills', data).then(r => r.data),
 
@@ -123,6 +126,8 @@ export const companiesApi = {
   update: (id: number, data: Partial<Company>) =>
     api.patch(`/companies/${id}`, data).then(r => r.data),
   remove: (id: number) => api.delete(`/companies/${id}`).then(r => r.data),
+  discover: () => api.post('/companies/discover').then(r => r.data),
+  discoverConfirm: (companies: any[]) => api.post('/companies/discover/confirm', { companies }).then(r => r.data),
 };
 
 /* ── IPE: Documents ── */

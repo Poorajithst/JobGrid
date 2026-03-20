@@ -8,11 +8,12 @@ import { UserSwitcher } from './components/UserSwitcher';
 import type { AppUser } from './components/UserSwitcher';
 import { OnboardingWizard } from './components/OnboardingWizard';
 import { Setup } from './pages/Setup';
+import { Skills } from './pages/Settings/Skills';
 import { useJobs } from './hooks/useJobs';
 import { useStats } from './hooks/useStats';
 import { useJob } from './hooks/useJob';
-import { usersApi, setActiveUserId } from './api/client';
-import type { JobFilters } from './api/types';
+import { usersApi, setActiveUserId, companiesApi } from './api/client';
+import type { JobFilters, Company } from './api/types';
 
 type View = 'dashboard' | 'documents' | 'profiles' | 'settings';
 
@@ -35,6 +36,52 @@ export default function App() {
   const [renaming, setRenaming] = useState(false);
   const [newName, setNewName] = useState('');
 
+  // Company discovery state
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [discoverLoading, setDiscoverLoading] = useState(false);
+  const [discoverCandidates, setDiscoverCandidates] = useState<any[]>([]);
+  const [discoverError, setDiscoverError] = useState<string | null>(null);
+  const [confirmingIds, setConfirmingIds] = useState<Set<string>>(new Set());
+
+  // Fetch companies list
+  const fetchCompanies = useCallback(async () => {
+    try {
+      const list = await companiesApi.list();
+      setCompanies(list);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  // Discover companies via AI
+  const handleDiscover = useCallback(async () => {
+    setDiscoverLoading(true);
+    setDiscoverError(null);
+    setDiscoverCandidates([]);
+    try {
+      const data = await companiesApi.discover();
+      setDiscoverCandidates(data.companies || []);
+    } catch (err: any) {
+      setDiscoverError(err?.response?.data?.error || 'Discovery failed');
+    } finally {
+      setDiscoverLoading(false);
+    }
+  }, []);
+
+  // Confirm adding a discovered company
+  const handleDiscoverAdd = useCallback(async (company: any) => {
+    setConfirmingIds(prev => new Set(prev).add(company.name));
+    try {
+      await companiesApi.discoverConfirm([company]);
+      setDiscoverCandidates(prev => prev.filter(c => c.name !== company.name));
+      await fetchCompanies();
+    } catch {
+      /* ignore */
+    } finally {
+      setConfirmingIds(prev => { const s = new Set(prev); s.delete(company.name); return s; });
+    }
+  }, [fetchCompanies]);
+
   // Fetch users and determine initial state
   const fetchUsers = useCallback(async () => {
     try {
@@ -50,6 +97,10 @@ export default function App() {
       return [];
     }
   }, []);
+
+  useEffect(() => {
+    fetchCompanies();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     (async () => {
@@ -294,7 +345,7 @@ export default function App() {
             </div>
 
             {/* All Users */}
-            <div className="bg-gradient-to-br from-bg-tertiary/70 to-bg-tertiary/30 border border-border-subtle rounded-xl p-5 px-6">
+            <div className="bg-gradient-to-br from-bg-tertiary/70 to-bg-tertiary/30 border border-border-subtle rounded-xl p-5 px-6 mb-6">
               <div className="text-[9px] font-bold uppercase tracking-[1.2px] text-text-dim mb-3">All Users</div>
               <div className="space-y-2">
                 {users.map((u) => (
@@ -315,6 +366,104 @@ export default function App() {
                     )}
                   </div>
                 ))}
+              </div>
+            </div>
+
+            {/* My Skills */}
+            {activeUser && (
+              <div className="mb-6">
+                <h3 className="text-[13px] font-bold text-text-primary tracking-tight mb-4">My Skills</h3>
+                <Skills userId={activeUser.id} />
+              </div>
+            )}
+
+            {/* Companies */}
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-[13px] font-bold text-text-primary tracking-tight">Companies</h3>
+                <button
+                  onClick={handleDiscover}
+                  disabled={discoverLoading}
+                  className="text-[10px] font-semibold bg-accent-indigo/20 hover:bg-accent-indigo/30 text-accent-indigo-light border border-accent-indigo/30 rounded-lg px-3 py-1.5 transition-colors disabled:opacity-50"
+                >
+                  {discoverLoading ? 'Discovering...' : 'Discover More'}
+                </button>
+              </div>
+
+              {discoverError && (
+                <div className="bg-red-900/20 border border-red-800/40 rounded-lg p-3 text-[11px] text-red-400 mb-3">
+                  {discoverError}
+                  <button onClick={() => setDiscoverError(null)} className="ml-2 underline">dismiss</button>
+                </div>
+              )}
+
+              {/* Discovery candidates */}
+              {discoverCandidates.length > 0 && (
+                <div className="bg-purple-900/10 border border-purple-800/30 rounded-xl p-4 px-5 mb-3">
+                  <div className="text-[9px] font-bold uppercase tracking-[1.2px] text-purple-400 mb-3">
+                    AI-Suggested Companies ({discoverCandidates.length})
+                  </div>
+                  <div className="space-y-2">
+                    {discoverCandidates.map((c) => (
+                      <div key={c.name} className="flex items-center gap-3 py-1.5 px-2 rounded-lg bg-bg-primary/20">
+                        <span className="text-xs font-medium text-text-secondary flex-1">{c.name}</span>
+                        {c.reason && (
+                          <span className="text-[10px] text-text-dim truncate max-w-[160px]">{c.reason}</span>
+                        )}
+                        <div className="flex items-center gap-1 text-[9px] text-text-dim">
+                          {c.greenhouse && <span className="bg-green-900/40 text-green-400 px-1 py-0.5 rounded">GH</span>}
+                          {c.lever && <span className="bg-blue-900/40 text-blue-400 px-1 py-0.5 rounded">LV</span>}
+                          {c.ashby && <span className="bg-orange-900/40 text-orange-400 px-1 py-0.5 rounded">AB</span>}
+                        </div>
+                        <button
+                          onClick={() => handleDiscoverAdd(c)}
+                          disabled={confirmingIds.has(c.name)}
+                          className="text-[10px] font-semibold text-accent-indigo hover:text-accent-indigo-light disabled:opacity-50 transition-colors"
+                        >
+                          {confirmingIds.has(c.name) ? 'Adding...' : 'Add'}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Company list */}
+              <div className="bg-gradient-to-br from-bg-tertiary/70 to-bg-tertiary/30 border border-border-subtle rounded-xl p-4 px-5">
+                <div className="text-[9px] font-bold uppercase tracking-[1.2px] text-text-dim mb-3">
+                  All Companies ({companies.length})
+                </div>
+                {companies.length === 0 ? (
+                  <span className="text-[11px] text-text-dim/50 italic">No companies yet</span>
+                ) : (
+                  <div className="space-y-1 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-bg-card">
+                    {companies.map((c) => (
+                      <div key={c.id} className="flex items-center gap-2 py-1 px-2 rounded-lg hover:bg-bg-primary/20 transition-colors">
+                        <span className="text-xs font-medium text-text-secondary flex-1">{c.name}</span>
+                        <div className="flex items-center gap-1 text-[9px]">
+                          {c.greenhouse_slug && <span className="bg-green-900/40 text-green-400 px-1 py-0.5 rounded">GH</span>}
+                          {c.lever_slug && <span className="bg-blue-900/40 text-blue-400 px-1 py-0.5 rounded">LV</span>}
+                          {(c as any).source && (
+                            <span className={`px-1.5 py-0.5 rounded text-[8px] font-semibold ${
+                              (c as any).source === 'seed' ? 'bg-gray-700 text-gray-300'
+                              : (c as any).source === 'manual' ? 'bg-green-900/50 text-green-300'
+                              : (c as any).source === 'discovered' ? 'bg-purple-900/50 text-purple-300'
+                              : (c as any).source === 'ai-suggested' ? 'bg-orange-900/50 text-orange-300'
+                              : 'bg-gray-700 text-gray-300'
+                            }`}>
+                              {(c as any).source}
+                            </span>
+                          )}
+                          {c.active ? (
+                            <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" title="Active" />
+                          ) : (
+                            <span className="w-1.5 h-1.5 rounded-full bg-gray-600 inline-block" title="Inactive" />
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
