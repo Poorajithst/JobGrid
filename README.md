@@ -10,6 +10,7 @@ Personal job-discovery platform that automatically scrapes job boards, scores ev
 - **8-step setup wizard** -- Choose your role archetype (PM/TPM, Software Engineer, Data Scientist, or Custom), upload your resume, and the app configures itself around your goals.
 - **Role-based dictionary templates** -- Skill dictionaries, scoring weights, title synonyms, and exclude filters pre-tuned for your archetype. Fully customizable after setup.
 - **5 job sources** -- Greenhouse API, Lever API, Indeed (Playwright), Google Jobs (Playwright), ZipRecruiter (Playwright).
+  > **Note on scraper durability:** Greenhouse and Lever use stable public JSON APIs. Indeed, Google Jobs, and ZipRecruiter are scraped via Playwright with CSS selectors, which means they can break when those sites change their markup. The scrape pipeline handles failures gracefully — a broken source logs an error and the other sources continue. If a scraper breaks, check `packages/backend/src/sources/` for the relevant file and update the selectors.
 - **Multi-query scraping** -- Auto-generates search queries from your target titles + synonyms. Up to 8 queries per scrape, with in-loop deduplication.
 - **7-dimension scoring engine (IPE)** -- Freshness, skill match, title alignment, cert match, competition, location, experience. Runs locally, scores 500+ jobs in under a second.
 - **Two-stage funnel** -- IPE narrows all jobs to your top 35, then AI validates and ranks to your top 15 with fit assessments, pitches, and red flags.
@@ -34,7 +35,7 @@ Personal job-discovery platform that automatically scrapes job boards, scores ev
 - **Company management** -- View all companies with source badges, toggle active/inactive, discover new ones.
 - **Pipeline tracking** -- Track jobs through Discovered, Applied, Interview, Offer stages.
 - **Keyword highlighting** -- Job descriptions highlight your matching skills, certs, and titles.
-- **Multi-user** -- Netflix-style profile switching. Each user has their own resume, profiles, and scores.
+- **Multi-profile** -- Netflix-style profile switching for local/household use (not SaaS multi-tenant). Each user has their own resume, profiles, and scores.
 
 ## Tech Stack
 
@@ -137,6 +138,8 @@ The weekly cron (4 AM Sunday) does this automatically.
 - **Import** -- Upload a config JSON during setup (step 1) or from Settings. Pre-fills all wizard steps.
 
 ### Multiple Users & Profiles
+
+Designed for personal or household use — multiple people sharing one local instance, not a hosted multi-tenant service.
 
 - Click your avatar to switch users or add new ones
 - Each user has separate documents, profiles, skills, and scores
@@ -273,6 +276,37 @@ NODE_ENV=development
 | Experience | 5% | 10% | Years of experience match |
 
 Weights are customizable per profile. Each archetype ships with tuned defaults.
+
+## Sample Output
+
+### Scored Job (IPE + AI Validation)
+
+```json
+{
+  "title": "Technical Program Manager",
+  "company": "Datadog",
+  "location": "Boston, MA",
+  "source": "greenhouse",
+  "ipeScore": 87,
+  "dimensions": {
+    "freshnessScore": 95,
+    "skillMatchScore": 82,
+    "titleAlignmentScore": 100,
+    "certMatchScore": 70,
+    "competitionScore": 85,
+    "locationMatchScore": 100,
+    "experienceAlignScore": 75
+  },
+  "matchedSkills": ["agile", "jira", "stakeholder management", "python", "aws", "ci/cd"],
+  "aiValidated": true,
+  "aiAgrees": true,
+  "aiFitAssessment": "Strong match. Candidate's TPM background with infrastructure experience aligns well with Datadog's observability platform team. The agile + stakeholder management combination is exactly what this role needs.",
+  "aiPitch": "Your infrastructure PM experience maps directly to Datadog's platform reliability focus. Lead with your cross-functional delivery track record and CI/CD pipeline work.",
+  "aiFlags": null
+}
+```
+
+This is what a top-scored job looks like after both the local IPE engine and AI validation have run. The `ipeScore` is a weighted aggregate of 7 dimensions; the `ai*` fields are added during the second-stage validation pass.
 
 ## Scripts
 
