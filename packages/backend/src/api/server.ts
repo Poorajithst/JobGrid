@@ -14,6 +14,7 @@ import { createScoreRouter } from './routes/score.js';
 import { createEnrichRouter } from './routes/enrich.js';
 import { errorHandler } from './middleware/errors.js';
 import { userContext } from './middleware/user-context.js';
+import { createBootstrapMiddleware } from './middleware/bootstrap.js';
 import { createUsersRouter } from './routes/users.js';
 import { runAllSources } from '../sources/index.js';
 import { scoreJobs } from '../scorer/index.js';
@@ -32,6 +33,7 @@ const app = express();
 app.use(cors({ origin: ['http://localhost:5173'] }));
 app.use(express.json());
 app.use(userContext);
+app.use(createBootstrapMiddleware(() => queries.getUserCount()));
 
 async function triggerScrape() {
   const run = queries.createScrapeRun({

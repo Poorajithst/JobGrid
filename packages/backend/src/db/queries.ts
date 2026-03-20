@@ -456,6 +456,10 @@ export function createQueries(db: DB) {
     },
 
     // ── Users ──────────────────────────────────────────────────
+    getUserCount() {
+      return db.select().from(schema.users).all().length;
+    },
+
     getUsers() {
       return db.select().from(schema.users).all();
     },
