@@ -17,13 +17,13 @@
     "agile", "scrum", "kanban", "waterfall", "ci/cd", "devops"
   ],
   "tools": [
-    "jira", "confluence", "github", "slack", "teams", "notion"
+    "jira", "confluence", "github", "slack", "teams", "notion", "power bi"
   ],
   "technical": [
     "python", "sql", "javascript", "aws", "docker", "rest api"
   ],
   "certifications": [
-    "pmp", "aws certified", "azure certified", "gcp certified", "cissp"
+    "pmp", "capm", "pmi-acp", "safe", "aws certified", "azure certified", "gcp certified", "cissp"
   ],
   "domains": [
     "healthcare", "fintech", "e-commerce", "cloud migration", "digital transformation"

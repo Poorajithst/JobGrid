@@ -1,4 +1,4 @@
-import { getAllTerms, getCertifications, getTools, loadDictionary } from './dictionary.js';
+import { getAllTerms, getAllTermsFromTemplate, getCertifications, getCertificationsFromTemplate, getTools, getToolsFromTemplate, loadDictionary, loadDictionaryFromTemplate } from './dictionary.js';
 
 export interface ExtractedProfile {
   skills: string[];
@@ -11,20 +11,22 @@ export interface ExtractedProfile {
   education: { degree: string; field: string } | null;
 }
 
-export function extractProfileData(text: string): ExtractedProfile {
+export function extractProfileData(text: string, userId?: number): ExtractedProfile {
   const lower = text.toLowerCase();
-  const dict = loadDictionary();
+
+  // Use DB dictionary if userId provided, otherwise fall back to default template
+  const dict = userId ? loadDictionary(userId) : loadDictionaryFromTemplate('default');
+  const allTerms = userId ? getAllTerms(userId) : getAllTermsFromTemplate('default');
+  const certList = userId ? getCertifications(userId) : getCertificationsFromTemplate('default');
+  const toolList = userId ? getTools(userId) : getToolsFromTemplate('default');
 
   // Extract skills: match all dictionary terms found in text
-  const allTerms = getAllTerms();
   const skills = allTerms.filter(term => lower.includes(term));
 
   // Extract certifications specifically
-  const certList = getCertifications();
   const certs = certList.filter(cert => lower.includes(cert));
 
   // Extract tools specifically
-  const toolList = getTools();
   const tools = toolList.filter(tool => lower.includes(tool));
 
   // Extract job titles from experience sections
