@@ -13,8 +13,12 @@ export const companies = sqliteTable('companies', {
   name: text('name').notNull(),
   greenhouseSlug: text('greenhouse_slug'),
   leverSlug: text('lever_slug'),
+  ashbySlug: text('ashby_slug'),
   active: integer('active', { mode: 'boolean' }).notNull().default(true),
   lastChecked: text('last_checked'),
+  source: text('source').notNull().default('manual'),
+  discoveredAt: text('discovered_at'),
+  relevanceNote: text('relevance_note'),
   createdAt: text('created_at').notNull().default(sql`(datetime('now'))`),
 });
 
@@ -97,6 +101,9 @@ export const profiles = sqliteTable('profiles', {
   maxExperienceYears: integer('max_experience_years'),
   searchQueries: text('search_queries'), // JSON array
   titleSynonyms: text('title_synonyms'), // JSON object
+  archetype: text('archetype'),
+  excludeTitles: text('exclude_titles'),
+  remotePreference: integer('remote_preference', { mode: 'boolean' }),
   freshnessWeight: real('freshness_weight').notNull().default(0.25),
   skillWeight: real('skill_weight').notNull().default(0.25),
   titleWeight: real('title_weight').notNull().default(0.15),
@@ -136,4 +143,29 @@ export const jobScores = sqliteTable('job_scores', {
   uniqueIndex('idx_job_scores_unique').on(table.jobId, table.profileId),
   index('idx_job_scores_profile').on(table.profileId),
   index('idx_job_scores_ipe').on(table.profileId, table.ipeScore),
+]);
+
+export const userDictionary = sqliteTable('user_dictionary', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: integer('user_id').notNull().references(() => users.id),
+  category: text('category').notNull(),
+  term: text('term').notNull(),
+  source: text('source').notNull(),
+  createdAt: text('created_at').notNull().default(sql`(datetime('now'))`),
+}, (table) => [
+  uniqueIndex('idx_user_dict_unique').on(table.userId, table.category, table.term),
+  index('idx_user_dict_user').on(table.userId),
+]);
+
+export const discoveryRuns = sqliteTable('discovery_runs', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  startedAt: text('started_at').notNull(),
+  finishedAt: text('finished_at'),
+  companiesFound: integer('companies_found').notNull().default(0),
+  companiesNew: integer('companies_new').notNull().default(0),
+  status: text('status').notNull(),
+  error: text('error'),
+  source: text('source').notNull(),
+}, (table) => [
+  index('idx_discovery_runs_started').on(table.startedAt),
 ]);

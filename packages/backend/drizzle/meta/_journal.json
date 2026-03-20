@@ -22,6 +22,13 @@
       "when": 1773897600000,
       "tag": "0002_users_multiuser",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1773966425469,
+      "tag": "0003_lying_bloodstrike",
+      "breakpoints": true
     }
   ]
 }
