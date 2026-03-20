@@ -16,6 +16,7 @@ import { errorHandler } from './middleware/errors.js';
 import { userContext } from './middleware/user-context.js';
 import { createBootstrapMiddleware } from './middleware/bootstrap.js';
 import { createUsersRouter } from './routes/users.js';
+import { createSetupRouter } from './routes/setup.js';
 import { runAllSources } from '../sources/index.js';
 import { scoreJobs } from '../scorer/index.js';
 import { calculateIpeScore, type ProfileConfig, type JobData } from '../ipe/index.js';
@@ -214,6 +215,7 @@ async function triggerScrape() {
 }
 
 app.use('/api/users', createUsersRouter(queries));
+app.use('/api/setup', createSetupRouter(queries));
 app.use('/api/jobs', createJobsRouter(queries));
 app.use('/api/stats', createStatsRouter(queries));
 app.use('/api/scrape', createScrapeRouter(queries, triggerScrape));

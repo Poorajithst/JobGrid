@@ -325,6 +325,16 @@ export function createQueries(db: DB) {
       maxExperienceYears?: number | null;
       searchQueries?: string | null;
       titleSynonyms?: string | null;
+      archetype?: string | null;
+      excludeTitles?: string | null;
+      remotePreference?: boolean | null;
+      freshnessWeight?: number;
+      skillWeight?: number;
+      titleWeight?: number;
+      certWeight?: number;
+      competitionWeight?: number;
+      locationWeight?: number;
+      experienceWeight?: number;
       userId?: number;
     }) {
       return db.insert(schema.profiles).values(data).returning().get();
@@ -338,6 +348,9 @@ export function createQueries(db: DB) {
       targetLocations: string | null;
       searchQueries: string | null;
       titleSynonyms: string | null;
+      archetype: string | null;
+      excludeTitles: string | null;
+      remotePreference: boolean | null;
       freshnessWeight: number;
       skillWeight: number;
       titleWeight: number;
@@ -539,6 +552,29 @@ export function createQueries(db: DB) {
         industries: [...allIndustries],
         experienceYears: maxYears,
       };
+    },
+
+    // ── User Dictionary ──────────────────────────────────────
+    insertDictionaryTerm(userId: number, category: string, term: string, source: string) {
+      return db.insert(schema.userDictionary).values({ userId, category, term, source }).onConflictDoNothing().run();
+    },
+
+    deleteDictionaryTerm(userId: number, category: string, term: string) {
+      return db.delete(schema.userDictionary)
+        .where(and(
+          eq(schema.userDictionary.userId, userId),
+          eq(schema.userDictionary.category, category),
+          eq(schema.userDictionary.term, term)
+        ))
+        .run();
+    },
+
+    getDictionaryTermCount(userId: number) {
+      return db.select().from(schema.userDictionary).where(eq(schema.userDictionary.userId, userId)).all().length;
+    },
+
+    getDictionaryTermsByUser(userId: number) {
+      return db.select().from(schema.userDictionary).where(eq(schema.userDictionary.userId, userId)).all();
     },
 
     // ── User-scoped profile queries ─────────────────────────
