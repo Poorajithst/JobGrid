@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import multer from 'multer';
+import { unlinkSync, existsSync } from 'fs';
+import { resolve } from 'path';
 import { extractTextFromPdf } from '../../documents/parser.js';
 import { extractProfileData } from '../../documents/extractor.js';
 import type { createQueries } from '../../db/queries.js';
@@ -39,6 +41,15 @@ export function createDocumentsRouter(queries: ReturnType<typeof createQueries>)
 
       // Extract structured data
       const profile = extractProfileData(rawText);
+
+      // Before deleting the old DB record, clean up old file if stored on disk
+      const oldDocs = queries.getDocumentsByTypeAndUser(type, req.userId);
+      for (const oldDoc of oldDocs) {
+        const oldPath = resolve(process.cwd(), 'data/uploads', oldDoc.filename);
+        if (existsSync(oldPath)) {
+          try { unlinkSync(oldPath); } catch { /* ignore */ }
+        }
+      }
 
       // Delete existing document of same type for this user (re-upload replaces)
       queries.deleteDocumentByTypeAndUser(type, req.userId);
