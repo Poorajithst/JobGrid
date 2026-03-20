@@ -19,6 +19,7 @@ import { createUsersRouter } from './routes/users.js';
 import { createSetupRouter } from './routes/setup.js';
 import { runAllSources } from '../sources/index.js';
 import { scoreJobs } from '../scorer/index.js';
+import { discoverCompaniesViaAi, probeCompany } from '../sources/discovery.js';
 import { calculateIpeScore, type ProfileConfig, type JobData } from '../ipe/index.js';
 import { isNull, eq } from 'drizzle-orm';
 import { jobs as jobsTable } from '../db/schema.js';
@@ -214,6 +215,49 @@ async function triggerScrape() {
   }
 }
 
+async function triggerDiscovery() {
+  const run = queries.createDiscoveryRun({ startedAt: new Date().toISOString(), status: 'running', source: 'scheduled' });
+  try {
+    const profiles = queries.getActiveProfiles();
+    if (profiles.length === 0) {
+      queries.updateDiscoveryRun(run.id, { finishedAt: new Date().toISOString(), status: 'completed', companiesFound: 0, companiesNew: 0 });
+      return;
+    }
+    const profile = profiles[0];
+    const targetTitles = JSON.parse(profile.targetTitles);
+    const targetLocations = profile.targetLocations ? JSON.parse(profile.targetLocations) : [];
+    const existingCompanies = queries.getCompanies().map((c: any) => c.name);
+
+    const suggestions = await discoverCompaniesViaAi(targetTitles, targetLocations, existingCompanies);
+    let newCount = 0;
+    for (const s of suggestions) {
+      const slugs = await probeCompany(s.name);
+      if (slugs.greenhouse || slugs.lever || slugs.ashby) {
+        queries.insertCompany({
+          name: s.name,
+          greenhouseSlug: slugs.greenhouse,
+          leverSlug: slugs.lever,
+          ashbySlug: slugs.ashby,
+          source: 'ai-suggested',
+        });
+        newCount++;
+      }
+    }
+    queries.updateDiscoveryRun(run.id, {
+      finishedAt: new Date().toISOString(),
+      companiesFound: suggestions.length,
+      companiesNew: newCount,
+      status: 'completed',
+    });
+  } catch (err: any) {
+    queries.updateDiscoveryRun(run.id, {
+      finishedAt: new Date().toISOString(),
+      status: 'failed',
+      error: err.message || String(err),
+    });
+  }
+}
+
 app.use('/api/users', createUsersRouter(queries));
 app.use('/api/setup', createSetupRouter(queries));
 app.use('/api/jobs', createJobsRouter(queries));
@@ -230,11 +274,11 @@ app.use(errorHandler);
 
 if (process.env.NODE_ENV !== 'test') {
   const { startScheduler } = await import('../scheduler/cron.js');
-  startScheduler(triggerScrape);
+  startScheduler(triggerScrape, triggerDiscovery);
 }
 
 app.listen(PORT, () => {
   console.log(`JobGrid API running on port ${PORT}`);
 });
 
-export { app, queries, triggerScrape };
+export { app, queries, triggerScrape, triggerDiscovery };

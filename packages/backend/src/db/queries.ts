@@ -23,7 +23,9 @@ export function createQueries(db: DB) {
       name: string;
       greenhouseSlug?: string | null;
       leverSlug?: string | null;
+      ashbySlug?: string | null;
       active?: boolean;
+      source?: string;
     }) {
       return db
         .insert(schema.companies)
@@ -31,7 +33,9 @@ export function createQueries(db: DB) {
           name: data.name,
           greenhouseSlug: data.greenhouseSlug ?? null,
           leverSlug: data.leverSlug ?? null,
+          ashbySlug: data.ashbySlug ?? null,
           active: data.active ?? true,
+          source: data.source ?? 'manual',
         })
         .returning()
         .get();
@@ -591,6 +595,19 @@ export function createQueries(db: DB) {
     getOutreachByJobIdAndUser(jobId: number, userId: number) {
       return db.select().from(schema.outreach)
         .where(and(eq(schema.outreach.jobId, jobId), eq(schema.outreach.userId, userId))).all();
+    },
+
+    // ── Discovery Runs ─────────────────────────────────────────
+    createDiscoveryRun(data: { startedAt: string; status: string; source: string }) {
+      return db.insert(schema.discoveryRuns).values(data).returning().get();
+    },
+
+    updateDiscoveryRun(id: number, data: Partial<{ finishedAt: string; companiesFound: number; companiesNew: number; status: string; error: string }>) {
+      return db.update(schema.discoveryRuns).set(data).where(eq(schema.discoveryRuns.id, id)).run();
+    },
+
+    getRecentDiscoveryRuns() {
+      return db.select().from(schema.discoveryRuns).orderBy(desc(schema.discoveryRuns.startedAt)).limit(10).all();
     },
 
     // ── Stats ──────────────────────────────────────────────────
