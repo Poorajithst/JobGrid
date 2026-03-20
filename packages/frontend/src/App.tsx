@@ -7,6 +7,7 @@ import { ProfileManager } from './components/ProfileManager';
 import { UserSwitcher } from './components/UserSwitcher';
 import type { AppUser } from './components/UserSwitcher';
 import { OnboardingWizard } from './components/OnboardingWizard';
+import { Setup } from './pages/Setup';
 import { useJobs } from './hooks/useJobs';
 import { useStats } from './hooks/useStats';
 import { useJob } from './hooks/useJob';
@@ -27,6 +28,7 @@ export default function App() {
   const [users, setUsers] = useState<AppUser[]>([]);
   const [activeUser, setActiveUser] = useState<AppUser | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showSetup, setShowSetup] = useState(false);
   const [initialized, setInitialized] = useState(false);
 
   // Settings state
@@ -39,7 +41,12 @@ export default function App() {
       const list = await usersApi.list();
       setUsers(list);
       return list as AppUser[];
-    } catch {
+    } catch (err: any) {
+      // 412 means setup_required — show Setup wizard instead of OnboardingWizard
+      if (err?.response?.status === 412) {
+        setShowSetup(true);
+        setInitialized(true);
+      }
       return [];
     }
   }, []);
@@ -47,8 +54,15 @@ export default function App() {
   useEffect(() => {
     (async () => {
       const list = await fetchUsers();
-      const storedId = localStorage.getItem(LS_KEY);
+      // If 412 was caught above, initialized is already true
+      if (list.length === 0 && !showSetup) {
+        // No users — show first-run Setup wizard
+        setShowSetup(true);
+        setInitialized(true);
+        return;
+      }
 
+      const storedId = localStorage.getItem(LS_KEY);
       if (storedId) {
         const found = list.find((u: AppUser) => u.id === Number(storedId));
         if (found) {
@@ -59,10 +73,7 @@ export default function App() {
         }
       }
 
-      // No stored user or not found — check if any users exist
-      if (list.length === 0) {
-        setShowOnboarding(true);
-      } else {
+      if (list.length > 0) {
         // Pick first user
         const first = list[0];
         setActiveUser(first);
@@ -86,6 +97,15 @@ export default function App() {
     localStorage.setItem(LS_KEY, String(user.id));
     setUsers((prev) => [...prev, appUser]);
     setShowOnboarding(false);
+  }, []);
+
+  const handleSetupComplete = useCallback((user: { id: number; name: string; avatarColor: string }) => {
+    const appUser: AppUser = { id: user.id, name: user.name, avatarColor: user.avatarColor };
+    setActiveUser(appUser);
+    setActiveUserId(user.id);
+    localStorage.setItem(LS_KEY, String(user.id));
+    setUsers([appUser]);
+    setShowSetup(false);
   }, []);
 
   const handleAddUser = useCallback(() => {
@@ -127,7 +147,12 @@ export default function App() {
     await updateNotes(notes);
   }, [updateNotes]);
 
-  // Show onboarding wizard overlay
+  // Show first-run setup wizard (no users exist or 412 from backend)
+  if (showSetup) {
+    return <Setup onComplete={handleSetupComplete} />;
+  }
+
+  // Show onboarding wizard for adding additional users
   if (showOnboarding) {
     return <OnboardingWizard onComplete={handleOnboardingComplete} />;
   }
@@ -226,10 +251,10 @@ export default function App() {
       {view === 'settings' && (
         <div className="flex-1 overflow-y-auto p-8 scrollbar-thin scrollbar-thumb-bg-card">
           <div className="max-w-2xl mx-auto">
-            <h2 className="text-[22px] font-bold text-[#f1f5f9] tracking-tight mb-6">Settings</h2>
+            <h2 className="text-[22px] font-bold text-text-primary tracking-tight mb-6">Settings</h2>
 
             {/* Current User */}
-            <div className="bg-gradient-to-br from-[#0f172a]/70 to-[#0f172a]/30 border border-border-subtle rounded-xl p-5 px-6 mb-4">
+            <div className="bg-gradient-to-br from-bg-tertiary/70 to-bg-tertiary/30 border border-border-subtle rounded-xl p-5 px-6 mb-4">
               <div className="text-[9px] font-bold uppercase tracking-[1.2px] text-text-dim mb-3">Current User</div>
               <div className="flex items-center gap-4">
                 <div
@@ -269,7 +294,7 @@ export default function App() {
             </div>
 
             {/* All Users */}
-            <div className="bg-gradient-to-br from-[#0f172a]/70 to-[#0f172a]/30 border border-border-subtle rounded-xl p-5 px-6">
+            <div className="bg-gradient-to-br from-bg-tertiary/70 to-bg-tertiary/30 border border-border-subtle rounded-xl p-5 px-6">
               <div className="text-[9px] font-bold uppercase tracking-[1.2px] text-text-dim mb-3">All Users</div>
               <div className="space-y-2">
                 {users.map((u) => (

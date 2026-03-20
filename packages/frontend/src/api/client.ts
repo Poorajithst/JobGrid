@@ -31,11 +31,51 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    if (error.response?.status === 412 && error.response?.data?.error === 'setup_required') {
+      window.location.href = '/#setup';
+      return Promise.reject(error);
+    }
     const message = error.response?.data?.error || error.message;
     console.error('API Error:', message);
     return Promise.reject(error);
   }
 );
+
+/* ── Setup Wizard ── */
+
+export const setupApi = {
+  createUser: (data: { name: string; avatarColor: string }) =>
+    api.post('/setup/user', data).then(r => r.data),
+
+  setArchetype: (data: { archetype: string; userId: number }) =>
+    api.post('/setup/archetype', data).then(r => r.data),
+
+  uploadDocument: (file: File, type: string, userId: number) => {
+    const form = new FormData();
+    form.append('file', file);
+    form.append('type', type);
+    form.append('userId', String(userId));
+    return api.post('/setup/documents', form).then(r => r.data);
+  },
+
+  updateSkills: (data: { userId: number; add?: { category: string; term: string }[]; remove?: { category: string; term: string }[] }) =>
+    api.post('/setup/skills', data).then(r => r.data),
+
+  updateProfile: (data: any) =>
+    api.post('/setup/profile', data).then(r => r.data),
+
+  loadCompanies: () =>
+    api.post('/setup/companies').then(r => r.data),
+
+  complete: (triggerScrape: boolean) =>
+    api.post('/setup/complete', { triggerScrape }).then(r => r.data),
+};
+
+export const configApi = {
+  export: () => api.get('/config/export').then(r => r.data),
+  import: (config: any) => api.post('/config/import', config).then(r => r.data),
+  importConfirm: (config: any) => api.post('/config/import/confirm', config).then(r => r.data),
+};
 
 /* ── Users ── */
 
